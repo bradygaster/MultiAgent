@@ -52,11 +52,10 @@ public class ConversationLoop
         _consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
         foreach (var (key, metadata) in _agentPool.GetAgentSummaries())
         {
-            var marker = key == _currentAgentKey ? "* " : "  ";
-            _consoleClient.Print($"{marker}{key}: {metadata.Name} ({metadata.Domain})", ConsoleColor.White);
+            _consoleClient.Print($"{metadata.Id}: {metadata.Name} ({metadata.Domain})", ConsoleColor.White);
         }
         _consoleClient.Print("\nCommands:", ConsoleColor.Gray);
-        _consoleClient.Print("  switch <agent-key> - Switch to an agent", ConsoleColor.Gray);
+        _consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
         _consoleClient.Print("  agents - Show this list", ConsoleColor.Gray);
         _consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
     }

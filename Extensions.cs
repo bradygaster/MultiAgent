@@ -56,7 +56,7 @@ internal static class Extensions
                     instructions: instructionData.Content
                 );
                 
-                agentPool.AddAgent(key, agent, instructionData.Metadata);
+                agentPool.AddAgent(instructionData.Metadata.Id, agent, instructionData.Metadata);
             }
             
             return agentPool;

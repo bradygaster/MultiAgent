@@ -15,8 +15,8 @@ public class AgentPool
     
     public InstructionMetadata? GetMetadata(string id) => _agentMetadata.GetValueOrDefault(id);
     
-    public IEnumerable<string> GetAvailableAgents() => _agents.Keys;
+    public IEnumerable<string> GetAvailableAgents() => _agents.Select(x => x.Value.Id);
     
     public IEnumerable<(string AgentId, InstructionMetadata Metadata)> GetAgentSummaries() 
-        => _agentMetadata.Select(kvp => (kvp.Key, kvp.Value));
+        => _agentMetadata.Select(kvp => (kvp.Value.Id, kvp.Value));
 }
