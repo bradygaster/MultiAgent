@@ -1,23 +1,18 @@
 ﻿using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
+using System.Text.Json;
 
-public class ConversationLoop
+public class ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
 {
-    private readonly AgentPool _agentPool;
-    private readonly ConsoleClient _consoleClient;
     private AIAgent? _currentAgent;
     private AgentThread? _currentThread;
     private string? _currentAgentKey;
 
-    public ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
-    {
-        _agentPool = agentPool;
-        _consoleClient = consoleClient;
-    }
-
     public async Task Chat()
     {
         ShowAvailableAgents();
-        
+
         while (true)
         {
             Console.Write("\n> ");
@@ -32,13 +27,13 @@ public class ConversationLoop
                 case "agents":
                     ShowAvailableAgents();
                     break;
-                case string cmd when cmd.StartsWith("switch "):
-                    SwitchAgent(cmd.Substring(7));
+                case string cmd when cmd.StartsWith("order "):
+                    await SubmitOrder(cmd.Substring(6));
                     break;
                 default:
                     if (_currentAgent == null)
                     {
-                        _consoleClient.Print("Please select an agent first. Type 'agents' to see available agents.", ConsoleColor.Yellow);
+                        consoleClient.Print("Please select an agent first. Type 'agents' to see available agents.", ConsoleColor.Yellow);
                         continue;
                     }
                     await ProcessAgentResponse(input);
@@ -49,51 +44,90 @@ public class ConversationLoop
 
     private void ShowAvailableAgents()
     {
-        _consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
-        foreach (var (key, metadata) in _agentPool.GetAgentSummaries())
+        consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
+        foreach (var (key, metadata) in agentPool.GetAgentSummaries())
         {
-            _consoleClient.Print($"{metadata.Id}: {metadata.Name} ({metadata.Domain})", ConsoleColor.White);
+            consoleClient.Print($"{metadata.Id}: {metadata.Name} ({metadata.Domain})", ConsoleColor.White);
         }
-        _consoleClient.Print("\nCommands:", ConsoleColor.Gray);
-        _consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
-        _consoleClient.Print("  agents - Show this list", ConsoleColor.Gray);
-        _consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
+        consoleClient.Print("\nCommands:", ConsoleColor.Gray);
+        consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
+        consoleClient.Print("  agents - Show this list", ConsoleColor.Gray);
+        consoleClient.Print("  order <your-order> - Place an order", ConsoleColor.Gray);
+        consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
     }
 
-    private void SwitchAgent(string agentKey)
+    public async Task<List<ChatMessage>> SubmitOrder(string order)
     {
-        var agent = _agentPool.GetAgent(agentKey);
-        var metadata = _agentPool.GetMetadata(agentKey);
-        
-        if (agent == null || metadata == null)
+        // Build a strict preamble that instructs all agents not to invent items and to use defaults.
+        var preamble = new System.Text.StringBuilder();
+        preamble.AppendLine("ORDER SUMMARY (canonical):");
+        preamble.AppendLine(order.Trim());
+        preamble.AppendLine();
+
+        var initialMessage = new ChatMessage(ChatRole.User, preamble.ToString());
+
+        // Get the agents from the pool
+        var grillAgent = agentPool.GetAgent(AgentIdentifiers.GrillAgent);
+        var fryerAgent = agentPool.GetAgent(AgentIdentifiers.FryerAgent);
+        var dessertAgent = agentPool.GetAgent(AgentIdentifiers.DessertAgent);
+        var platingAgent = agentPool.GetAgent(AgentIdentifiers.PlatingAgent);
+
+        // Build the linear workflow through the agents in the intended order.
+        var workflow = new WorkflowBuilder(grillAgent!)
+                            .AddEdge(grillAgent!, fryerAgent!)
+                            .AddEdge(fryerAgent!, dessertAgent!)
+                            .AddEdge(dessertAgent!, platingAgent!)
+                            .Build();
+
+        string? lastExecutorId = null;
+
+        // Start a fresh streaming run for this order so previous conversation state does not leak.
+        await using StreamingRun run = await InProcessExecution.StreamAsync(workflow: workflow, initialMessage);
+        await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
+        await foreach (WorkflowEvent evt in run.WatchStreamAsync())
         {
-            _consoleClient.Print($"Agent '{agentKey}' not found.", ConsoleColor.Red);
-            return;
+            if (evt is AgentRunUpdateEvent e)
+            {
+                if (e.ExecutorId != lastExecutorId)
+                {
+                    lastExecutorId = e.ExecutorId;
+                    Console.WriteLine();
+                }
+
+                Console.Write(e.Update.Text);
+                if (e.Update.Contents.OfType<FunctionCallContent>().FirstOrDefault() is FunctionCallContent call)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  [Calling function '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
+                }
+            }
+            else if (evt is WorkflowOutputEvent output)
+            {
+                Console.WriteLine();
+                // Return the list of chat messages produced by the workflow
+                return output.As<List<ChatMessage>>() ?? new List<ChatMessage>();
+            }
         }
-        
-        _currentAgent = agent;
-        _currentThread = agent.GetNewThread();
-        _currentAgentKey = agentKey;
-        
-        _consoleClient.Print($"\nSwitched to {metadata.Name} ({metadata.Domain})", ConsoleColor.Green);
+
+        return new List<ChatMessage>();
     }
 
     private async Task ProcessAgentResponse(string input)
     {
         try
         {
-            _consoleClient.Print($"\n[{_agentPool.GetMetadata(_currentAgentKey!)?.Name}]:", ConsoleColor.Cyan);
+            consoleClient.Print($"\n[{agentPool.GetMetadata(_currentAgentKey!)?.Name}]:", ConsoleColor.Cyan);
             
             await foreach (var update in _currentAgent!.RunStreamingAsync(input, _currentThread!))
             {
-                _consoleClient.Fragment(update.Text, ConsoleColor.White);
+                consoleClient.Fragment(update.Text, ConsoleColor.White);
             }
-            
-            _consoleClient.Print("\n", ConsoleColor.White); // End the response with a newline
+
+            consoleClient.Print("\n", ConsoleColor.White); // End the response with a newline
         }
         catch (Exception ex)
         {
-            _consoleClient.Print($"\nError during agent run: {ex.Message}", ConsoleColor.Red);
+            consoleClient.Print($"\nError during agent run: {ex.Message}", ConsoleColor.Red);
         }
     }
 }
