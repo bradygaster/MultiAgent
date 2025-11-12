@@ -1,0 +1,16 @@
+﻿namespace MultiAgent;
+
+public record AddWhippedCreamRequest(string Amount);
+public record MakeShakeRequest(string Size, string Flavor, string Toppings);
+public record MakeSundaeRequest(string Size, string Flavor, string Toppings);
+public record FryStandardRequest(string Portion, int Duration);
+public record FrySweetPotatoRequest(string Portion, int Duration);
+public record FryWaffleRequest(string Portion, int Duration);
+public record AddSaltRequest(bool addSalt);
+public record AddBaconRequest(int BaconStrips);
+public record CookPattyRequest(string PattyType, string Doneness);
+public record MeltCheeseRequest(string CheeseType);
+public record ToastBunRequest(string BunType, string ToastLevel);
+public record AssembleBurgerRequest(string Components);
+public record PackageTakeoutRequest(string Items, string Accessories);
+public record PlateMealRequest(string Service, string Presentation);

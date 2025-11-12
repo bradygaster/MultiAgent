@@ -1,9 +1,12 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using ModelContextProtocol.Server;
 using System.Text.Json;
 
-public class ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
+public class ConversationLoop(AgentPool agentPool, 
+    ConsoleClient consoleClient,
+    IEnumerable<McpServerTool> mcpTools)
 {
     private AIAgent? _currentAgent;
     private AgentThread? _currentThread;
@@ -27,6 +30,9 @@ public class ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
                 case "agents":
                     ShowAvailableAgents();
                     break;
+                case "tools":
+                    ShowAvailableTools();
+                    break;
                 case string cmd when cmd.StartsWith("order "):
                     await SubmitOrder(cmd.Substring(6));
                     break;
@@ -42,6 +48,15 @@ public class ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
         }
     }
 
+    private void ShowAvailableTools()
+    {
+        consoleClient.Print("\nAvailable Tools:", ConsoleColor.Cyan);
+        foreach (var tool in mcpTools)
+        {
+            consoleClient.Print($"{tool.ProtocolTool.Name}: {tool.ProtocolTool.Description}", ConsoleColor.White);
+        }
+    }
+
     private void ShowAvailableAgents()
     {
         consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
@@ -52,6 +67,7 @@ public class ConversationLoop(AgentPool agentPool, ConsoleClient consoleClient)
         consoleClient.Print("\nCommands:", ConsoleColor.Gray);
         consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
         consoleClient.Print("  agents - Show this list", ConsoleColor.Gray);
+        consoleClient.Print("  tools - show the list of tools", ConsoleColor.Gray);
         consoleClient.Print("  order <your-order> - Place an order", ConsoleColor.Gray);
         consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
     }

@@ -3,6 +3,11 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+// Configure MCP server
+builder.Services
+       .AddMcpServer()
+       .WithToolsFromAssembly();
+
 builder.AddSettings();
 builder.AddServices();
 

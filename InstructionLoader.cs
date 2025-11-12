@@ -31,12 +31,7 @@ public class InstructionLoader
     public InstructionData LoadInstruction(string fileName)
     {
         var basePath = AppContext.BaseDirectory;
-        var promptsPath = Path.Combine(basePath, "prompts", "prompt_template.md");
         var instructionPath = Path.Combine(basePath, "instructions", fileName);
-
-        // Validate required files exist
-        if (!File.Exists(promptsPath))
-            throw new FileNotFoundException("Prompt template file not found. Ensure prompt_template.md exists in the prompts directory.");
         
         if (!File.Exists(instructionPath))
             throw new FileNotFoundException($"Instruction file '{fileName}' not found in the instructions directory.");
@@ -47,18 +42,10 @@ public class InstructionLoader
         // Parse front matter and content
         var (metadata, content) = ParseFrontMatter(instructionContent);
         
-        // Load and process prompt template
-        var promptTemplate = File.ReadAllText(promptsPath)
-            .Replace("{{DOMAIN_NAME}}", metadata.Domain)
-            .Replace("{{AGENT_NAME}}", metadata.Name);
-
-        // Combine prompt template with instruction content
-        var combinedContent = $"{promptTemplate}\n\n# Knowledge Base\n{content}";
-        
         return new InstructionData
         {
             Metadata = metadata,
-            Content = combinedContent
+            Content = instructionContent
         };
     }
     

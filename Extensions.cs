@@ -3,6 +3,7 @@ using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ModelContextProtocol.Server;
 using OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
@@ -26,7 +27,8 @@ internal static class Extensions
         {
             var azureOptions = services.GetRequiredService<IOptions<AzureSettings>>().Value;
             var instructionLoader = services.GetRequiredService<InstructionLoader>();
-            
+            var tools = services.GetServices<McpServerTool>();
+
             // Validate required Azure settings
             if (string.IsNullOrWhiteSpace(azureOptions.ModelName))
                 throw new InvalidOperationException("Azure:ModelName not configured.");
