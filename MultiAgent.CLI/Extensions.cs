@@ -17,6 +17,7 @@ internal static class Extensions
         builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
         builder.Configuration.AddUserSecrets<Program>();
         builder.Services.Configure<AzureSettings>(builder.Configuration.GetSection("Azure"));
+        builder.Services.Configure<MultiAgentSettings>(builder.Configuration.GetSection("MultiAgent"));
         return builder;
     }
 
@@ -28,6 +29,7 @@ internal static class Extensions
         _ = builder.Services.AddSingleton<AgentPool>(services =>
         {
             var azureOptions = services.GetRequiredService<IOptions<AzureSettings>>().Value;
+            var appSettings = services.GetRequiredService<IOptions<MultiAgentSettings>>().Value;
             var instructionLoader = services.GetRequiredService<InstructionLoader>();
 
             // Validate required Azure settings

@@ -6,6 +6,11 @@ public class InstructionMetadata
     public string[] Tools { get; set; } = Array.Empty<string>();
 }
 
+public class MultiAgentSettings
+{
+    public string InstructionsPath { get; set; } = "instructions";
+}
+
 public class AzureSettings
 {
     public string ModelName { get; set; } = string.Empty;

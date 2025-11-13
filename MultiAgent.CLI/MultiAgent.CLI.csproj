@@ -26,6 +26,18 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="instructions-no-tools\dessert-agent.md">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="instructions-no-tools\fryer-agent.md">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="instructions-no-tools\grill-agent.md">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="instructions-no-tools\plating-agent.md">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
         <None Update="instructions\dessert-agent.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>

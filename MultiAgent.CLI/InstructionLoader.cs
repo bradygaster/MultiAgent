@@ -1,4 +1,6 @@
-﻿using YamlDotNet.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using YamlDotNet.Serialization;
 
 public class InstructionData
 {
@@ -6,18 +8,22 @@ public class InstructionData
     public string Content { get; set; } = string.Empty;
 }
 
-public class InstructionLoader
+public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<MultiAgentSettings> logger)
 {
     public Dictionary<string, InstructionData> LoadAllInstructions()
     {
         var basePath = AppContext.BaseDirectory;
-        var instructionsPath = Path.Combine(basePath, "instructions");
+
+        var instructionsPath = Path.Combine(basePath, settings.Value.InstructionsPath);
+        logger.LogInformation($"Base path for instructions: {instructionsPath}");
+
         var instructionFiles = Directory.GetFiles(instructionsPath, "*.md");
-        
+
         var instructions = new Dictionary<string, InstructionData>();
         
         foreach (var file in instructionFiles)
         {
+            logger.LogInformation($"Loading instruction file: {file}");
             var fileName = Path.GetFileName(file);
             var key = Path.GetFileNameWithoutExtension(file); // Use filename without extension as key
             
@@ -37,7 +43,7 @@ public class InstructionLoader
     public InstructionData LoadInstruction(string fileName)
     {
         var basePath = AppContext.BaseDirectory;
-        var instructionPath = Path.Combine(basePath, "instructions", fileName);
+        var instructionPath = Path.Combine(basePath, settings.Value.InstructionsPath, fileName);
         
         if (!File.Exists(instructionPath))
             throw new FileNotFoundException($"Instruction file '{fileName}' not found in the instructions directory.");
