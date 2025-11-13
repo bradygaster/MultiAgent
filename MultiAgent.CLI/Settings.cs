@@ -6,12 +6,6 @@ public class InstructionMetadata
     public string[] Tools { get; set; } = Array.Empty<string>();
 }
 
-public class InstructionData
-{
-    public InstructionMetadata Metadata { get; set; } = new();
-    public string Content { get; set; } = string.Empty;
-}
-
 public class AzureSettings
 {
     public string ModelName { get; set; } = string.Empty;

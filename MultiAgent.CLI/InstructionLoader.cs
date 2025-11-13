@@ -1,5 +1,11 @@
 ﻿using YamlDotNet.Serialization;
 
+public class InstructionData
+{
+    public InstructionMetadata Metadata { get; set; } = new();
+    public string Content { get; set; } = string.Empty;
+}
+
 public class InstructionLoader
 {
     public Dictionary<string, InstructionData> LoadAllInstructions()
