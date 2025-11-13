@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.3.11122.205
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiAgent.CLI", "MultiAgent.CLI\MultiAgent.CLI.csproj", "{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiAgent.OrderSimulator", "MultiAgent.CLI\MultiAgent.OrderSimulator.csproj", "{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McpServerHost", "McpServerHost\McpServerHost.csproj", "{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}"
 EndProject

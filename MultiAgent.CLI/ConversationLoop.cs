@@ -1,7 +1,6 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> logger)
@@ -39,11 +38,7 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
         var platingAgent = agentPool.GetAgent(AgentIdentifiers.PlatingAgent);
 
         // Build the linear workflow through the agents in the intended order.
-        var workflow = new WorkflowBuilder(grillAgent!)
-                            .AddEdge(grillAgent!, fryerAgent!).WithOutputFrom(grillAgent!)
-                            .AddEdge(fryerAgent!, dessertAgent!).WithOutputFrom(fryerAgent!)
-                            .AddEdge(dessertAgent!, platingAgent!).WithOutputFrom(dessertAgent!)
-                            .Build();
+        var workflow = AgentWorkflowBuilder.BuildSequential(grillAgent!, fryerAgent!, dessertAgent!, platingAgent!);
 
         string? lastExecutorId = null;
 
@@ -57,12 +52,12 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                 if (e.ExecutorId != lastExecutorId)
                 {
                     lastExecutorId = e.ExecutorId;
-                    logger.LogInformation($"\n--- AgentRunUpdateEvent {JsonSerializer.Serialize(evt.Data)} ---\n");
+                    logger.LogInformation($"🕵️ AgentRunUpdateEvent: {JsonSerializer.Serialize(evt.Data)}");
                 }
 
                 if (e.Update.Contents.OfType<FunctionCallContent>().FirstOrDefault() is FunctionCallContent call)
                 {
-                    logger.LogInformation($"  [Calling function '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
+                    logger.LogInformation($"📡 Calling MCP Tool '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
                 }
             }
             else if (evt is WorkflowOutputEvent output)

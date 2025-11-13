@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\MultiAgent.ServiceDefaults\MultiAgent.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\MultiAgent.ServiceDefaults\MultiAgent.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 </Project>

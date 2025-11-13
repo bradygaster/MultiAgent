@@ -1,12 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using MultiAgent.CLI;
+﻿using MultiAgent.CLI;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.AddSettings();
 builder.AddServices();
-builder.Services.AddHostedService<OrderSimulator>();
+builder.Services.AddHostedService<OrderSimulatingWorker>();
 
 var host = builder.Build();
+
+host.MapDefaultEndpoints();
+
 host.Run();
