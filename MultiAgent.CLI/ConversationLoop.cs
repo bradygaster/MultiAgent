@@ -1,12 +1,10 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using ModelContextProtocol.Server;
 using System.Text.Json;
 
 public class ConversationLoop(AgentPool agentPool, 
-    ConsoleClient consoleClient,
-    IEnumerable<McpServerTool> mcpTools)
+    ConsoleClient consoleClient)
 {
     private AIAgent? _currentAgent;
     private AgentThread? _currentThread;
@@ -14,8 +12,6 @@ public class ConversationLoop(AgentPool agentPool,
 
     public async Task Chat()
     {
-        ShowAvailableAgents();
-
         while (true)
         {
             Console.Write("\n> ");
@@ -30,8 +26,8 @@ public class ConversationLoop(AgentPool agentPool,
                 case "agents":
                     ShowAvailableAgents();
                     break;
-                case "tools":
-                    ShowAvailableTools();
+                case "random":
+                    await SubmitRandomOrder();
                     break;
                 case string cmd when cmd.StartsWith("order "):
                     await SubmitOrder(cmd.Substring(6));
@@ -48,15 +44,6 @@ public class ConversationLoop(AgentPool agentPool,
         }
     }
 
-    private void ShowAvailableTools()
-    {
-        consoleClient.Print("\nAvailable Tools:", ConsoleColor.Cyan);
-        foreach (var tool in mcpTools)
-        {
-            consoleClient.Print($"{tool.ProtocolTool.Name}: {tool.ProtocolTool.Description}", ConsoleColor.White);
-        }
-    }
-
     private void ShowAvailableAgents()
     {
         consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
@@ -66,10 +53,22 @@ public class ConversationLoop(AgentPool agentPool,
         }
         consoleClient.Print("\nCommands:", ConsoleColor.Gray);
         consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
-        consoleClient.Print("  agents - Show this list", ConsoleColor.Gray);
-        consoleClient.Print("  tools - show the list of tools", ConsoleColor.Gray);
+        consoleClient.Print("  agents - Show the list of agents", ConsoleColor.Gray);
         consoleClient.Print("  order <your-order> - Place an order", ConsoleColor.Gray);
+        consoleClient.Print("  random - Place a randomly-generated order", ConsoleColor.Gray);
         consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
+    }
+
+    public async Task<List<ChatMessage>> SubmitRandomOrder()
+    {
+        var randomOrders = new List<string>
+        {
+            "1 cheeseburger with fries and a chocolate milkshake",
+            "3 cheeseburgers, 2 orders of fries, and 2 chocolate milkshakes",
+            "2 cheeseburgers, one with bacon, 1 order of regular fries without salt, 1 order of sweet potato fries, and 2 strawberry milkshakes",
+        };
+
+        return await SubmitOrder(randomOrders[new Random().Next(randomOrders.Count)]);
     }
 
     public async Task<List<ChatMessage>> SubmitOrder(string order)
@@ -90,9 +89,9 @@ public class ConversationLoop(AgentPool agentPool,
 
         // Build the linear workflow through the agents in the intended order.
         var workflow = new WorkflowBuilder(grillAgent!)
-                            .AddEdge(grillAgent!, fryerAgent!)
-                            .AddEdge(fryerAgent!, dessertAgent!)
-                            .AddEdge(dessertAgent!, platingAgent!)
+                            .AddEdge(grillAgent!, fryerAgent!).WithOutputFrom(grillAgent!)
+                            .AddEdge(fryerAgent!, dessertAgent!).WithOutputFrom(fryerAgent!)
+                            .AddEdge(dessertAgent!, platingAgent!).WithOutputFrom(dessertAgent!)
                             .Build();
 
         string? lastExecutorId = null;

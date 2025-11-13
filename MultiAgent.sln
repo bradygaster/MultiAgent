@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11122.205 main
+VisualStudioVersion = 18.3.11122.205
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiAgent", "MultiAgent.csproj", "{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiAgent.CLI", "MultiAgent.CLI\MultiAgent.CLI.csproj", "{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McpServerHost", "McpServerHost\McpServerHost.csproj", "{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3F0DFD-4EC6-7CAD-D739-B20E036A35E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A0F50C-CF24-42EF-9AC3-4CE65A3B4DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

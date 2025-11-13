@@ -53,7 +53,7 @@ public class InstructionLoader
     {
         var metadata = new InstructionMetadata();
         var content = fileContent;
-        
+
         if (fileContent.StartsWith("---"))
         {
             var endOfFrontMatter = fileContent.IndexOf("---", 3);
@@ -61,7 +61,7 @@ public class InstructionLoader
             {
                 var frontMatterYaml = fileContent.Substring(4, endOfFrontMatter - 4).Trim();
                 content = fileContent.Substring(endOfFrontMatter + 3).Trim();
-                
+
                 try
                 {
                     var deserializer = new DeserializerBuilder()
@@ -75,7 +75,7 @@ public class InstructionLoader
                 }
             }
         }
-        
+
         return (metadata, content);
     }
 }
