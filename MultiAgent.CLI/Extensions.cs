@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Server;
 using OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
@@ -24,7 +23,6 @@ internal static class Extensions
     public static IHostApplicationBuilder AddServices(this IHostApplicationBuilder builder)
     {
         builder.AddMcpClient();
-        builder.Services.AddSingleton<ConsoleClient>();
         builder.Services.AddSingleton<InstructionLoader>();
 
         _ = builder.Services.AddSingleton<AgentPool>(services =>
@@ -50,7 +48,10 @@ internal static class Extensions
 
             var chatClient = new AzureOpenAIClient(new Uri(azureOptions.Endpoint), cred)
                 .GetChatClient(azureOptions.ModelName)
-                .AsIChatClient();
+                .AsIChatClient()
+                .AsBuilder()
+                .UseOpenTelemetry(sourceName: "agent-telemetry-source")
+                .Build();
 
             // Create agent pool and populate it
             var agentPool = new AgentPool();

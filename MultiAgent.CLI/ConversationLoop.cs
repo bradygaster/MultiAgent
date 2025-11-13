@@ -57,19 +57,16 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                 if (e.ExecutorId != lastExecutorId)
                 {
                     lastExecutorId = e.ExecutorId;
-                    logger.LogInformation($"\n--- AgentRunUpdateEvent {evt.Data} ---\n");
+                    logger.LogInformation($"\n--- AgentRunUpdateEvent {JsonSerializer.Serialize(evt.Data)} ---\n");
                 }
 
-                Console.Write(e.Update.Text);
                 if (e.Update.Contents.OfType<FunctionCallContent>().FirstOrDefault() is FunctionCallContent call)
                 {
-                    Console.WriteLine();
-                    Console.WriteLine($"  [Calling function '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
+                    logger.LogInformation($"  [Calling function '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
                 }
             }
             else if (evt is WorkflowOutputEvent output)
             {
-                Console.WriteLine();
                 // Return the list of chat messages produced by the workflow
                 return output.As<List<ChatMessage>>() ?? new List<ChatMessage>();
             }
