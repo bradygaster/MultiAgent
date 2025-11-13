@@ -2,11 +2,11 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class ShakeTool
+public class ShakeTool(ILogger<ShakeTool> logger)
 {
     private string WriteToConsoleAndReturn(string input)
     {
-        Console.WriteLine(input);
+        logger.LogInformation(input);
         return input;
     }
 

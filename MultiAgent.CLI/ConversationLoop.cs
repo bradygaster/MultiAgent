@@ -1,63 +1,14 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-public class ConversationLoop(AgentPool agentPool, 
-    ConsoleClient consoleClient)
+public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> logger)
 {
     private AIAgent? _currentAgent;
     private AgentThread? _currentThread;
     private string? _currentAgentKey;
-
-    public async Task Chat()
-    {
-        while (true)
-        {
-            Console.Write("\n> ");
-            var input = Console.ReadLine();
-
-            switch (input?.Trim().ToLowerInvariant())
-            {
-                case null or "":
-                    continue;
-                case "exit":
-                    return;
-                case "agents":
-                    ShowAvailableAgents();
-                    break;
-                case "random":
-                    await SubmitRandomOrder();
-                    break;
-                case string cmd when cmd.StartsWith("order "):
-                    await SubmitOrder(cmd.Substring(6));
-                    break;
-                default:
-                    if (_currentAgent == null)
-                    {
-                        consoleClient.Print("Please select an agent first. Type 'agents' to see available agents.", ConsoleColor.Yellow);
-                        continue;
-                    }
-                    await ProcessAgentResponse(input);
-                    break;
-            }
-        }
-    }
-
-    private void ShowAvailableAgents()
-    {
-        consoleClient.Print("\nAvailable Agents:", ConsoleColor.Cyan);
-        foreach (var (key, metadata) in agentPool.GetAgentSummaries())
-        {
-            consoleClient.Print($"{metadata.Id}: {metadata.Name} ({metadata.Domain})", ConsoleColor.White);
-        }
-        consoleClient.Print("\nCommands:", ConsoleColor.Gray);
-        consoleClient.Print("  switch <agent-id> - Switch to an agent", ConsoleColor.Gray);
-        consoleClient.Print("  agents - Show the list of agents", ConsoleColor.Gray);
-        consoleClient.Print("  order <your-order> - Place an order", ConsoleColor.Gray);
-        consoleClient.Print("  random - Place a randomly-generated order", ConsoleColor.Gray);
-        consoleClient.Print("  exit - Quit", ConsoleColor.Gray);
-    }
 
     public async Task<List<ChatMessage>> SubmitRandomOrder()
     {
@@ -75,7 +26,7 @@ public class ConversationLoop(AgentPool agentPool,
     {
         // Build a strict preamble that instructs all agents not to invent items and to use defaults.
         var preamble = new System.Text.StringBuilder();
-        preamble.AppendLine("ORDER SUMMARY (canonical):");
+        preamble.AppendLine("ORDER SUMMARY:");
         preamble.AppendLine(order.Trim());
         preamble.AppendLine();
 
@@ -106,7 +57,7 @@ public class ConversationLoop(AgentPool agentPool,
                 if (e.ExecutorId != lastExecutorId)
                 {
                     lastExecutorId = e.ExecutorId;
-                    Console.WriteLine();
+                    logger.LogInformation($"\n--- AgentRunUpdateEvent {evt.Data} ---\n");
                 }
 
                 Console.Write(e.Update.Text);
@@ -125,24 +76,5 @@ public class ConversationLoop(AgentPool agentPool,
         }
 
         return new List<ChatMessage>();
-    }
-
-    private async Task ProcessAgentResponse(string input)
-    {
-        try
-        {
-            consoleClient.Print($"\n[{agentPool.GetMetadata(_currentAgentKey!)?.Name}]:", ConsoleColor.Cyan);
-            
-            await foreach (var update in _currentAgent!.RunStreamingAsync(input, _currentThread!))
-            {
-                consoleClient.Fragment(update.Text, ConsoleColor.White);
-            }
-
-            consoleClient.Print("\n", ConsoleColor.White); // End the response with a newline
-        }
-        catch (Exception ex)
-        {
-            consoleClient.Print($"\nError during agent run: {ex.Message}", ConsoleColor.Red);
-        }
     }
 }

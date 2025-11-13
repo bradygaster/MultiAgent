@@ -12,4 +12,8 @@
 		<PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.4.0-preview.3" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\MultiAgent.ServiceDefaults\MultiAgent.ServiceDefaults.csproj" />
+	</ItemGroup>
+
 </Project>

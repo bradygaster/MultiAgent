@@ -18,10 +18,9 @@ Be extremely concise - just state what you completed.
 
 # Output format:
 
-*Always* respond in the format below.
+*Always* respond in the format below, make sure to leave a pair of blank lines at the end of your output.
 
 # -----------------------------
 # Dessert: [Brief list of what was made]
 # Next: [What plating should handle]
 # -----------------------------
-

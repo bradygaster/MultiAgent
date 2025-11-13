@@ -16,11 +16,9 @@ Be extremely concise - just confirm order completion.
 
 # Output format:
 
-*Always* respond in the format below.
+*Always* respond in the format below, make sure to leave a pair of blank lines at the end of your output.
 
 # -----------------------------
 # Expo: [Brief order summary]
 # Status: ORDER COMPLETE
 # -----------------------------
-
-
