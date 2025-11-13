@@ -64,6 +64,12 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                 {
                     logger.LogInformation($"  [Calling function '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
                 }
+                
+                // If this update contains function calls, send a turn token to continue workflow execution
+                if (e.Update.Contents.OfType<FunctionCallContent>().Any())
+                {
+                    await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
+                }
             }
             else if (evt is WorkflowOutputEvent output)
             {
