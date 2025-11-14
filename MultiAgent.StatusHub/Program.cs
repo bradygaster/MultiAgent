@@ -10,17 +10,18 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
-
 app.UseCors();
+
+app.MapDefaultEndpoints();
 
 app.MapHub<OrderStatusHub>("/orderstatus");
 

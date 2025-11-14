@@ -13,7 +13,10 @@ export const useOrderStatus = () => {
     console.log('Connecting to OrderStatusHub at:', hubUrl);
     
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${hubUrl}/orderstatus`)
+      .withUrl(`${hubUrl}/orderstatus`, {
+        skipNegotiation: false,
+        withCredentials: false
+      })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();
