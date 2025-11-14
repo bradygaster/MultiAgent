@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\McpServerHost\McpServerHost.csproj" />
     <ProjectReference Include="..\MultiAgent.CLI\MultiAgent.OrderSimulator.csproj" />
   </ItemGroup>

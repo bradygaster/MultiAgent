@@ -13,7 +13,12 @@ internal static class AddServicesExtension
     {
         builder.AddMcpClient();
         builder.Services.AddSingleton<InstructionLoader>();
+        builder.Services.AddSingleton<BaseEventPublisher>();
 
+        // add workflows
+        builder.AddOrderWorkflow();
+
+        // set up the agent pool
         _ = builder.Services.AddSingleton<AgentPool>(services =>
         {
             var azureOptions = services.GetRequiredService<IOptions<AzureSettings>>().Value;

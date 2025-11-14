@@ -1,8 +1,10 @@
 ﻿---
 id: expo
-name: "Plating Expert"
+name: "Plating Agent"
 domain: "Final meal assembly and presentation prep"
 tools: ["plate_meal", "package_for_takeout"]
+emoji: "🎁"
+color: "#10b981"
 ---
 
 # PlatingAgent Instructions

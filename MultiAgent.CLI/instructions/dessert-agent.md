@@ -1,8 +1,10 @@
 ﻿---
 id: desserts
-name: "Dessert Expert"
+name: "Dessert Agent"
 domain: "Making and baking deserts"
 tools: ["make_shake", "make_sundae", "add_whipped_cream"]
+emoji: "🍨"
+color: "#3b82f6"
 ---
 
 # DessertAgent Instructions

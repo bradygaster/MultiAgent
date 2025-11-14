@@ -2,14 +2,8 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class GrillTools(ILogger<GrillTools> logger)
+public class GrillTools(ILogger<GrillTools> logger) : BaseTool(logger)
 {
-    private string LogAndReturn(string input)
-    {
-        logger.LogInformation(input);
-        return input;
-    }
-
     [McpServerTool(Name = "cook_patty"), Description("Grill a beef patty.")]
     public string CookPatty(CookPattyRequest request) => LogAndReturn($"🥩 Cooking {request.PattyType} patty to {request.Doneness} doneness... Done! Perfectly cooked patty ready.");
 
