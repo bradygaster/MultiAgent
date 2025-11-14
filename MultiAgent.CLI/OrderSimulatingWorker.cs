@@ -9,7 +9,7 @@ public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
         {
             await conversation.SubmitRandomOrder();
 
-            logger.LogInformation("Waiting to simulate next order ...");
+            logger.LogInformation("🕛 Waiting to simulate next order ...");
 
             // Simulate order processing logic here
             await Task.Delay(1000, stoppingToken);
