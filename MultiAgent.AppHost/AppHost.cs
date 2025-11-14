@@ -2,7 +2,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var mcpserverhost = builder.AddProject<Projects.McpServerHost>("mcpserverhost");
 
-builder.AddProject<Projects.MultiAgent_CLI>("multiagent-cli")
+builder.AddProject<Projects.MultiAgent_OrderSimulator>("orderSimulator")
        .WaitFor(mcpserverhost)
        .WithReference(mcpserverhost);
 

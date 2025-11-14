@@ -4,6 +4,7 @@ public record MakeSundaeRequest(string Size, string Flavor, string Toppings);
 public record FryStandardRequest(string Portion, int Duration);
 public record FrySweetPotatoRequest(string Portion, int Duration);
 public record FryWaffleRequest(string Portion, int Duration);
+public record FryOnionRings(string Portion, int Duration);
 public record AddSaltRequest(bool addSalt);
 public record AddBaconRequest(int BaconStrips);
 public record CookPattyRequest(string PattyType, string Doneness);

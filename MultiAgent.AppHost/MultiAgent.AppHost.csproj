@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\McpServerHost\McpServerHost.csproj" />
-    <ProjectReference Include="..\MultiAgent.CLI\MultiAgent.CLI.csproj" />
+    <ProjectReference Include="..\MultiAgent.CLI\MultiAgent.OrderSimulator.csproj" />
   </ItemGroup>
 
 </Project>
