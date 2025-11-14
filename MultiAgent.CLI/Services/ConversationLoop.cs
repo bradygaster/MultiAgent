@@ -2,8 +2,9 @@
 using Microsoft.Extensions.AI;
 using System.Text;
 using System.Text.Json;
+using MultiAgent.CLI.Services;
 
-public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> logger)
+public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> logger, OrderEventPublisher eventPublisher)
 {
     public async Task<List<ChatMessage>> SubmitRandomOrder()
     {
@@ -26,6 +27,19 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
 
     public async Task<List<ChatMessage>> SubmitOrder(string order)
     {
+        var orderId = Guid.NewGuid().ToString("N")[..8];
+        
+        // Publish order received event
+        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+        {
+            OrderId = orderId,
+            AgentId = "system",
+            AgentName = "System",
+            EventType = OrderEventType.OrderReceived,
+            Message = order,
+            Timestamp = DateTime.UtcNow
+        });
+
         // Build a strict preamble that instructs all agents not to invent items and to use defaults.
         var preamble = new System.Text.StringBuilder();
         preamble.AppendLine("ORDER SUMMARY:");
@@ -62,6 +76,17 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                     {
                         lastExecutorId = e.ExecutorId;
                         logger.LogInformation($"🕵️ AgentRunUpdateEvent: {e.Update.AuthorName} starting");
+                        
+                        // Publish agent started event
+                        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                        {
+                            OrderId = orderId,
+                            AgentId = e.ExecutorId,
+                            AgentName = e.Update.AuthorName,
+                            EventType = OrderEventType.AgentStarted,
+                            Message = $"{e.Update.AuthorName} starting",
+                            Timestamp = DateTime.UtcNow
+                        });
                     }
 
                     sb.Append(e.Update.Text);
@@ -69,12 +94,39 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                     if (e.Update.Contents.OfType<FunctionCallContent>().FirstOrDefault() is FunctionCallContent call)
                     {
                         logger.LogInformation($"📡 Calling MCP Tool '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
+                        
+                        // Publish tool call event
+                        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                        {
+                            OrderId = orderId,
+                            AgentId = e.ExecutorId,
+                            AgentName = e.Update.AuthorName,
+                            EventType = OrderEventType.ToolCalled,
+                            Message = $"Calling {call.Name}",
+                            Timestamp = DateTime.UtcNow,
+                            ToolCall = new Dictionary<string, object>
+                            {
+                                ["name"] = call.Name,
+                                ["arguments"] = call.Arguments ?? new Dictionary<string, object>()
+                            }
+                        });
                     }
                 }
                 else if (evt is WorkflowOutputEvent output)
                 {
                     logger.LogInformation($"📒 Output of order fulfillment process: \n {sb.ToString()}");
                     sb.Clear();
+
+                    // Publish order completed event
+                    await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                    {
+                        OrderId = orderId,
+                        AgentId = "system",
+                        AgentName = "System",
+                        EventType = OrderEventType.OrderCompleted,
+                        Message = "Order completed successfully",
+                        Timestamp = DateTime.UtcNow
+                    });
 
                     // Return the list of chat messages produced by the workflow
                     return output.As<List<ChatMessage>>() ?? new List<ChatMessage>();

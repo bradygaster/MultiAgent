@@ -34,9 +34,24 @@ const AgentNode = ({ data }) => {
               fontSize: '18px', 
               fontWeight: 'bold', 
               color: '#1f2937',
-              marginBottom: '4px'
+              marginBottom: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
               {data.name}
+              {data.activeOrders > 0 && (
+                <span style={{
+                  background: data.color,
+                  color: 'white',
+                  fontSize: '11px',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontWeight: 'bold'
+                }}>
+                  {data.activeOrders}
+                </span>
+              )}
             </div>
             <div style={{ 
               fontSize: '12px', 

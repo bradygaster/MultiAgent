@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -10,6 +10,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import AgentNode from './components/AgentNode';
+import { useOrderStatus } from './hooks/useOrderStatus';
 import './App.css';
 
 const nodeTypes = {
@@ -190,14 +191,75 @@ const initialEdges = [
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { orderEvents, activeOrders, isConnected, clearCompletedOrders } = useOrderStatus();
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
+  // Update node styling based on active orders
+  useEffect(() => {
+    setNodes(currentNodes => 
+      currentNodes.map(node => {
+        if (node.type === 'agentNode') {
+          const activeOrdersInNode = Object.values(activeOrders).filter(
+            order => order.currentAgent === node.data.agentId && !order.isComplete
+          );
+
+          return {
+            ...node,
+            style: {
+              ...node.style,
+              boxShadow: activeOrdersInNode.length > 0 
+                ? `0 0 30px ${node.data.color}, 0 0 60px ${node.data.color}` 
+                : undefined,
+              transform: activeOrdersInNode.length > 0 
+                ? 'scale(1.05)' 
+                : 'scale(1)',
+              transition: 'all 0.3s ease'
+            },
+            data: {
+              ...node.data,
+              activeOrders: activeOrdersInNode.length
+            }
+          };
+        }
+        return node;
+      })
+    );
+  }, [activeOrders, setNodes]);
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
+      {/* Connection Status Indicator */}
+      <div style={{
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        zIndex: 1001,
+        padding: '8px 16px',
+        background: isConnected ? '#10b981' : '#ef4444',
+        color: 'white',
+        borderRadius: '8px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <span style={{ 
+          width: '8px', 
+          height: '8px', 
+          borderRadius: '50%', 
+          background: 'white',
+          animation: isConnected ? 'pulse 2s infinite' : 'none'
+        }} />
+        {isConnected ? 'Live' : 'Disconnected'}
+      </div>
+
+      {/* Info Panel */}
       <div style={{
         position: 'absolute',
         top: 20,
@@ -213,19 +275,106 @@ function App() {
           🏪 MultiAgent Restaurant Workflow
         </h1>
         <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: '1.5' }}>
-          This diagram visualizes the sequential agent workflow for processing restaurant orders.
-          Each agent specializes in a specific station and uses MCP tools to complete their tasks.
+          This diagram visualizes the sequential agent workflow for processing restaurant orders in real-time.
+          Watch as orders flow through each station!
         </p>
         <div style={{ marginTop: '12px', padding: '10px', background: '#f3f4f6', borderRadius: '8px' }}>
-          <strong style={{ fontSize: '12px', color: '#374151' }}>Architecture:</strong>
-          <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px', fontSize: '12px', color: '#6b7280' }}>
-            <li>Built with Microsoft.Agents.AI</li>
-            <li>Sequential workflow using AgentWorkflowBuilder</li>
-            <li>MCP (Model Context Protocol) tools</li>
-            <li>Streaming execution with telemetry</li>
-          </ul>
+          <strong style={{ fontSize: '12px', color: '#374151' }}>Live Stats:</strong>
+          <div style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#6b7280' }}>
+            <div>🔴 Active Orders: <strong>{Object.values(activeOrders).filter(o => !o.isComplete).length}</strong></div>
+            <div>✅ Completed: <strong>{Object.values(activeOrders).filter(o => o.isComplete).length}</strong></div>
+            <div>📊 Total Events: <strong>{orderEvents.length}</strong></div>
+          </div>
         </div>
       </div>
+
+      {/* Active Orders Panel */}
+      <div style={{
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        zIndex: 1000,
+        background: 'white',
+        padding: '16px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        maxWidth: '400px',
+        maxHeight: '400px',
+        overflow: 'auto'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '12px' 
+        }}>
+          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
+            Recent Orders ({Object.keys(activeOrders).length})
+          </h3>
+          {Object.values(activeOrders).some(o => o.isComplete) && (
+            <button
+              onClick={clearCompletedOrders}
+              style={{
+                padding: '4px 8px',
+                fontSize: '11px',
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Clear Completed
+            </button>
+          )}
+        </div>
+        {Object.keys(activeOrders).length === 0 && (
+          <div style={{ 
+            textAlign: 'center', 
+            color: '#9ca3af', 
+            padding: '20px',
+            fontSize: '14px'
+          }}>
+            Waiting for orders...
+          </div>
+        )}
+        {Object.entries(activeOrders)
+          .sort((a, b) => new Date(b[1].lastUpdate) - new Date(a[1].lastUpdate))
+          .map(([orderId, order]) => (
+          <div key={orderId} style={{
+            padding: '12px',
+            marginBottom: '8px',
+            background: order.isComplete ? '#f0fdf4' : '#fef3c7',
+            border: `2px solid ${order.isComplete ? '#10b981' : '#f59e0b'}`,
+            borderRadius: '8px',
+            fontSize: '12px'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '6px'
+            }}>
+              <strong style={{ fontSize: '13px' }}>Order #{orderId}</strong>
+              {order.isComplete && <span style={{ color: '#10b981', fontSize: '16px' }}>✓</span>}
+            </div>
+            <div style={{ color: '#374151', marginBottom: '4px' }}>
+              {order.isComplete ? '🍽️ Complete' : `🔄 ${order.currentAgentName}`}
+            </div>
+            <div style={{ color: '#6b7280', fontSize: '11px' }}>
+              {new Date(order.lastUpdate).toLocaleTimeString()}
+            </div>
+            <div style={{ 
+              marginTop: '6px', 
+              fontSize: '11px',
+              color: '#6b7280'
+            }}>
+              {order.events.length} events
+            </div>
+          </div>
+        ))}
+      </div>
+      
       <ReactFlow
         nodes={nodes}
         edges={edges}
