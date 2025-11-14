@@ -2,14 +2,8 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class FryerTools(ILogger<FryerTools> logger)
+public class FryerTools(ILogger<FryerTools> logger) : BaseTool(logger)
 {
-    private string LogAndReturn(string input)
-    {
-        logger.LogInformation(input);
-        return input;
-    }
-
     [McpServerTool(Name = "fry_fries"), Description("Fry standard French fries.")]
     public string FryStandard(FryStandardRequest request) => LogAndReturn($"🍟 Frying {request.Portion} portion of standard fries for {request.Duration} minutes... Crispy golden fries ready!");
 

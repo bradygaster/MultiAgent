@@ -2,14 +2,8 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class DessertTools(ILogger<DessertTools> logger)
+public class DessertTools(ILogger<DessertTools> logger) : BaseTool(logger)
 {
-    private string LogAndReturn(string input)
-    {
-        logger.LogInformation(input);
-        return input;
-    }
-
     [McpServerTool(Name = "make_shake"), Description("Make a milkshake.")]
     public string MakeShake(MakeShakeRequest request) => LogAndReturn($"🥤 Making {request.Size} {request.Flavor} shake with {request.Toppings}... Creamy shake ready!");
 

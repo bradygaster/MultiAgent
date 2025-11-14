@@ -1,4 +1,4 @@
-﻿public static class AgentIdentifiers
+﻿public static class OrderAgentIdentifiers
 {
     public static string DessertAgent => "desserts";
     public static string FryerAgent => "fryer";

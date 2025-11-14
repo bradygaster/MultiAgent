@@ -1,6 +1,6 @@
 ﻿public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
-    IWorkflowDefinition workflowDefinition,
     IOrderGenerator orderGenerator,
+    OrderWorkflowDefinition orderWorkflowDefinition,
     ConversationLoop conversation) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -8,7 +8,7 @@
         while (!stoppingToken.IsCancellationRequested)
         {
             var randomOrder = await orderGenerator.GenerateRandomOrder();
-            await conversation.ExecuteWorkflowAsync<OrderStatusEvent>(workflowDefinition, randomOrder);
+            await conversation.ExecuteWorkflowAsync<OrderStatusEvent>(orderWorkflowDefinition, randomOrder);
 
             // pause between orders
             logger.LogInformation("🕛 Waiting to simulate next order ...");

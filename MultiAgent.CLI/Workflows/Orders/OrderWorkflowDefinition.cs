@@ -11,10 +11,10 @@ public class OrderWorkflowDefinition : IWorkflowDefinition
     public object BuildWorkflow(AgentPool agentPool)
     {
         return AgentWorkflowBuilder.BuildSequential(
-            agentPool.GetAgent(AgentIdentifiers.GrillAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.FryerAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.DessertAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.PlatingAgent)!
+            agentPool.GetAgent(OrderAgentIdentifiers.GrillAgent)!,
+            agentPool.GetAgent(OrderAgentIdentifiers.FryerAgent)!,
+            agentPool.GetAgent(OrderAgentIdentifiers.DessertAgent)!,
+            agentPool.GetAgent(OrderAgentIdentifiers.PlatingAgent)!
         );
     }
 
