@@ -1,6 +1,6 @@
 ﻿---
 id: fryer
-name: "Fryer Expert"
+name: "Fryer Agent"
 domain: "Cooking anything in the fryer"
 tools: ["fry_fries", "fry_waffle_fries", "fry_sweet_potato_fries", "add_salt", "bag_fries_for_order", "fry_onion_rings"]
 ---

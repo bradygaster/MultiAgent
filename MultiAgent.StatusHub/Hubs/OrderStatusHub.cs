@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using MultiAgent.StatusHub.Models;
 
 namespace MultiAgent.StatusHub.Hubs;
@@ -16,7 +16,7 @@ public class OrderStatusHub : Hub
     public async Task SubscribeToOrders()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, "OrderUpdates");
-        _logger.LogInformation("Client {ConnectionId} subscribed to order updates", Context.ConnectionId);
+        _logger.LogInformation("📻 Client {ConnectionId} subscribed to order updates", Context.ConnectionId);
     }
 
     public async Task PublishOrderEvent(OrderStatusEvent evt)
@@ -28,7 +28,7 @@ public class OrderStatusHub : Hub
         
         _orderHistory[evt.OrderId].Add(evt);
         
-        _logger.LogDebug("Publishing order event: {EventType} for Order {OrderId} Agent {AgentName}", 
+        _logger.LogDebug("📻 Publishing order event: {EventType} for Order {OrderId} Agent {AgentName}", 
             evt.EventType, evt.OrderId, evt.AgentName);
         
         await Clients.Group("OrderUpdates").SendAsync("OrderStatusUpdate", evt);
@@ -50,13 +50,13 @@ public class OrderStatusHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+        _logger.LogInformation("🛜 Client connected: {ConnectionId}", Context.ConnectionId);
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _logger.LogInformation("Client disconnected: {ConnectionId}", Context.ConnectionId);
+        _logger.LogInformation("⛓️‍💥 Client disconnected: {ConnectionId}", Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
 }

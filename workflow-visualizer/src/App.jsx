@@ -10,11 +10,13 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import AgentNode from './components/AgentNode';
+import OutputNode from './components/OutputNode';
 import { useOrderStatus } from './hooks/useOrderStatus';
 import './App.css';
 
 const nodeTypes = {
   agentNode: AgentNode,
+  outputNode: OutputNode,
 };
 
 // Define the workflow nodes based on the MultiAgent application
@@ -30,7 +32,7 @@ const initialNodes = [
         '2 cheeseburgers, 2 orders of fries, and 2 chocolate milkshakes'
       ]
     },
-    position: { x: 250, y: 50 },
+    position: { x: 50, y: 150 },
     style: {
       background: '#6366f1',
       color: 'white',
@@ -39,7 +41,7 @@ const initialNodes = [
       padding: '20px',
       fontSize: '16px',
       fontWeight: 'bold',
-      width: 300,
+      width: 180,
     },
   },
   {
@@ -48,7 +50,7 @@ const initialNodes = [
     data: {
       label: '🥩 Grill Agent',
       agentId: 'grill',
-      name: 'Grilling Expert',
+      name: 'Grilling Agent',
       domain: 'Grilling meats and produce on the grill or griddle',
       tools: [
         { name: 'cook_patty', desc: 'Grill burger patties' },
@@ -60,7 +62,7 @@ const initialNodes = [
       emoji: '🥩',
       color: '#dc2626',
     },
-    position: { x: 250, y: 200 },
+    position: { x: 320, y: 120 },
   },
   {
     id: 'fryer-agent',
@@ -68,7 +70,7 @@ const initialNodes = [
     data: {
       label: '🍟 Fryer Agent',
       agentId: 'fryer',
-      name: 'Fryer Expert',
+      name: 'Fryer Agent',
       domain: 'Cooking anything in the fryer',
       tools: [
         { name: 'fry_fries', desc: 'Fry regular fries' },
@@ -81,7 +83,7 @@ const initialNodes = [
       emoji: '🍟',
       color: '#f59e0b',
     },
-    position: { x: 250, y: 400 },
+    position: { x: 580, y: 90 },
   },
   {
     id: 'dessert-agent',
@@ -89,7 +91,7 @@ const initialNodes = [
     data: {
       label: '🍨 Dessert Agent',
       agentId: 'desserts',
-      name: 'Dessert Expert',
+      name: 'Dessert Agent',
       domain: 'Making and baking desserts',
       tools: [
         { name: 'make_shake', desc: 'Make milkshakes' },
@@ -99,7 +101,7 @@ const initialNodes = [
       emoji: '🍨',
       color: '#ec4899',
     },
-    position: { x: 250, y: 600 },
+    position: { x: 540, y: 485 },
   },
   {
     id: 'plating-agent',
@@ -107,7 +109,7 @@ const initialNodes = [
     data: {
       label: '🎁 Plating Agent',
       agentId: 'expo',
-      name: 'Plating Expert',
+      name: 'Plating Agent',
       domain: 'Final meal assembly and presentation prep',
       tools: [
         { name: 'plate_meal', desc: 'Plate complete order for dine-in' },
@@ -116,26 +118,16 @@ const initialNodes = [
       emoji: '🎁',
       color: '#10b981',
     },
-    position: { x: 250, y: 800 },
+    position: { x: 140, y: 490 },
   },
   {
     id: 'output',
-    type: 'output',
+    type: 'outputNode',
     data: { 
       label: '🍽️ Order Complete',
       description: 'Hand order to customer or delivery service'
     },
-    position: { x: 250, y: 1000 },
-    style: {
-      background: '#22c55e',
-      color: 'white',
-      border: '2px solid #16a34a',
-      borderRadius: '12px',
-      padding: '20px',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      width: 300,
-    },
+    position: { x: 50, y: 600 },
   },
 ];
 
@@ -145,7 +137,8 @@ const initialEdges = [
     id: 'e-order-grill',
     source: 'order',
     target: 'grill-agent',
-    animated: true,
+    targetHandle: 'left',
+    animated: false,
     style: { stroke: '#6366f1', strokeWidth: 3 },
     label: 'Process Order',
     labelStyle: { fill: '#6366f1', fontWeight: 700 },
@@ -153,8 +146,10 @@ const initialEdges = [
   {
     id: 'e-grill-fryer',
     source: 'grill-agent',
+    sourceHandle: 'right-source',
     target: 'fryer-agent',
-    animated: true,
+    targetHandle: 'left',
+    animated: false,
     style: { stroke: '#dc2626', strokeWidth: 3 },
     label: 'Burgers Ready',
     labelStyle: { fill: '#dc2626', fontWeight: 700 },
@@ -162,8 +157,10 @@ const initialEdges = [
   {
     id: 'e-fryer-dessert',
     source: 'fryer-agent',
+    sourceHandle: 'bottom-source',
     target: 'dessert-agent',
-    animated: true,
+    targetHandle: 'right',
+    animated: false,
     style: { stroke: '#f59e0b', strokeWidth: 3 },
     label: 'Fries Ready',
     labelStyle: { fill: '#f59e0b', fontWeight: 700 },
@@ -171,8 +168,10 @@ const initialEdges = [
   {
     id: 'e-dessert-plating',
     source: 'dessert-agent',
+    sourceHandle: 'left-source',
     target: 'plating-agent',
-    animated: true,
+    targetHandle: 'right',
+    animated: false,
     style: { stroke: '#ec4899', strokeWidth: 3 },
     label: 'Desserts Ready',
     labelStyle: { fill: '#ec4899', fontWeight: 700 },
@@ -180,8 +179,9 @@ const initialEdges = [
   {
     id: 'e-plating-output',
     source: 'plating-agent',
+    sourceHandle: 'left-source',
     target: 'output',
-    animated: true,
+    animated: false,
     style: { stroke: '#10b981', strokeWidth: 3 },
     label: 'Plated/Packaged',
     labelStyle: { fill: '#10b981', fontWeight: 700 },
@@ -192,43 +192,94 @@ function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { orderEvents, activeOrders, isConnected, clearCompletedOrders } = useOrderStatus();
+  const [globalToolCounts, setGlobalToolCounts] = React.useState({});
+
+  // Ensure edges are never animated
+  React.useEffect(() => {
+    setEdges(edges => edges.map(edge => ({ ...edge, animated: false })));
+  }, [setEdges]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
-  // Update node styling based on active orders
+  // Update global tool counts whenever a new tool is called
   useEffect(() => {
+    const toolEvents = orderEvents.filter(e => e.eventType === 2);
+    const newCounts = {};
+    
+    toolEvents.forEach(event => {
+      const toolName = event.toolCall?.name;
+      const agentName = event.agentName;
+      if (toolName && agentName) {
+        const key = `${agentName}:${toolName}`;
+        newCounts[key] = (newCounts[key] || 0) + 1;
+      }
+    });
+    
+    setGlobalToolCounts(newCounts);
+  }, [orderEvents]);
+
+  // Update node data based on active orders (without affecting position)
+  useEffect(() => {
+    const completedOrdersCount = Object.values(activeOrders).filter(order => order.isComplete).length;
+    
     setNodes(currentNodes => 
       currentNodes.map(node => {
         if (node.type === 'agentNode') {
-          const activeOrdersInNode = Object.values(activeOrders).filter(
-            order => order.currentAgent === node.data.agentId && !order.isComplete
-          );
+          // Find orders currently being processed by this agent
+          // Match by currentAgentName since currentAgent is a long hash ID
+          const activeOrdersForAgent = Object.entries(activeOrders)
+            .filter(([orderId, order]) => {
+              const nameMatch = order.currentAgentName?.toLowerCase().includes(node.data.name.toLowerCase());
+              return nameMatch && !order.isComplete;
+            })
+            .map(([orderId, order]) => ({ orderId, ...order }));
+          
+          // Get the most recent order ID being processed by this agent
+          const currentOrder = activeOrdersForAgent.length > 0 
+            ? activeOrdersForAgent.sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))[0]
+            : null;
+          
+          // Match by agentName - eventType is a number (ToolCalled = 2)
+          const recentToolEvents = orderEvents
+            .filter(e => {
+              if (e.eventType !== 2) return false; // ToolCalled = 2
+              
+              const nameMatch = e.agentName?.toLowerCase().includes(node.data.name.toLowerCase());
+              return nameMatch;
+            })
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          
+          const lastTool = recentToolEvents[0]?.toolCall?.name;
 
           return {
             ...node,
-            style: {
-              ...node.style,
-              boxShadow: activeOrdersInNode.length > 0 
-                ? `0 0 30px ${node.data.color}, 0 0 60px ${node.data.color}` 
-                : undefined,
-              transform: activeOrdersInNode.length > 0 
-                ? 'scale(1.05)' 
-                : 'scale(1)',
-              transition: 'all 0.3s ease'
-            },
             data: {
               ...node.data,
-              activeOrders: activeOrdersInNode.length
+              activeOrders: activeOrdersForAgent.length,
+              isActive: activeOrdersForAgent.length > 0,
+              currentOrderId: currentOrder?.orderId || null,
+              lastToolCalled: lastTool,
+              lastToolTimestamp: recentToolEvents[0]?.timestamp,
+              globalToolCounts: globalToolCounts
+            }
+          };
+        } else if (node.id === 'output') {
+          // Update the output node with completed count
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: `🍽️ Order Complete (${completedOrdersCount})`
             }
           };
         }
         return node;
       })
     );
-  }, [activeOrders, setNodes]);
+  }, [activeOrders, orderEvents, setNodes, globalToolCounts]);
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -263,7 +314,7 @@ function App() {
       <div style={{
         position: 'absolute',
         top: 20,
-        left: 20,
+        right: 20,
         zIndex: 1000,
         background: 'white',
         padding: '20px',
@@ -274,7 +325,7 @@ function App() {
         <h1 style={{ margin: 0, fontSize: '24px', color: '#1f2937', marginBottom: '8px' }}>
           🏪 MultiAgent Restaurant Workflow
         </h1>
-        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: '1.5' }}>
+        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '12px' }}>
           This diagram visualizes the sequential agent workflow for processing restaurant orders in real-time.
           Watch as orders flow through each station!
         </p>
@@ -286,94 +337,138 @@ function App() {
             <div>📊 Total Events: <strong>{orderEvents.length}</strong></div>
           </div>
         </div>
+        
+        {/* Recent Orders Section */}
+        <div style={{ marginTop: '16px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '12px' 
+          }}>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
+              Recent Orders ({Object.keys(activeOrders).length})
+            </h3>
+            {Object.values(activeOrders).some(o => o.isComplete) && (
+              <button
+                onClick={clearCompletedOrders}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '10px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            {Object.keys(activeOrders).length === 0 && (
+              <div style={{ 
+                textAlign: 'center', 
+                color: '#9ca3af', 
+                padding: '20px',
+                fontSize: '13px'
+              }}>
+                Waiting for orders...
+              </div>
+            )}
+            {Object.entries(activeOrders)
+              .sort((a, b) => new Date(b[1].lastUpdate) - new Date(a[1].lastUpdate))
+              .map(([orderId, order]) => {
+                const firstEvent = order.events.find(e => e.eventType === 'OrderReceived');
+                const orderMessage = firstEvent?.message || 'Order in progress';
+                
+                return (
+                  <div key={orderId} style={{
+                    padding: '12px',
+                    marginBottom: '8px',
+                    background: order.isComplete ? '#f0fdf4' : '#fffbeb',
+                    border: `2px solid ${order.isComplete ? '#10b981' : '#f59e0b'}`,
+                    borderRadius: '8px',
+                    fontSize: '11px',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '6px'
+                    }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ 
+                          fontSize: '12px', 
+                          fontWeight: 'bold',
+                          color: '#1f2937',
+                          marginBottom: '3px',
+                          fontFamily: 'monospace'
+                        }}>
+                          #{orderId}
+                        </div>
+                        <div style={{ 
+                          fontSize: '10px', 
+                          color: '#6b7280',
+                          lineHeight: '1.3',
+                          marginBottom: '6px'
+                        }}>
+                          {orderMessage.length > 50 
+                            ? orderMessage.substring(0, 50) + '...' 
+                            : orderMessage}
+                        </div>
+                      </div>
+                      {order.isComplete && (
+                        <span style={{ 
+                          color: '#10b981', 
+                          fontSize: '16px',
+                          marginLeft: '6px',
+                          flexShrink: 0
+                        }}>✓</span>
+                      )}
+                    </div>
+                    
+                    <div style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 8px',
+                      background: order.isComplete ? '#dcfce7' : '#fef9c3',
+                      borderRadius: '4px',
+                      marginBottom: '6px'
+                    }}>
+                      <span style={{ fontSize: '12px' }}>
+                        {order.isComplete ? '🍽️' : '🔄'}
+                      </span>
+                      <span style={{ 
+                        fontSize: '11px', 
+                        fontWeight: '600',
+                        color: '#374151'
+                      }}>
+                        {order.isComplete ? 'Complete' : order.currentAgentName}
+                      </span>
+                    </div>
+                    
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '9px',
+                      color: '#9ca3af'
+                    }}>
+                      <span>{new Date(order.lastUpdate).toLocaleTimeString()}</span>
+                      <span>{order.events.length} event{order.events.length !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
       </div>
 
-      {/* Active Orders Panel */}
-      <div style={{
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        zIndex: 1000,
-        background: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        maxWidth: '400px',
-        maxHeight: '400px',
-        overflow: 'auto'
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginBottom: '12px' 
-        }}>
-          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
-            Recent Orders ({Object.keys(activeOrders).length})
-          </h3>
-          {Object.values(activeOrders).some(o => o.isComplete) && (
-            <button
-              onClick={clearCompletedOrders}
-              style={{
-                padding: '4px 8px',
-                fontSize: '11px',
-                background: '#ef4444',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Clear Completed
-            </button>
-          )}
-        </div>
-        {Object.keys(activeOrders).length === 0 && (
-          <div style={{ 
-            textAlign: 'center', 
-            color: '#9ca3af', 
-            padding: '20px',
-            fontSize: '14px'
-          }}>
-            Waiting for orders...
-          </div>
-        )}
-        {Object.entries(activeOrders)
-          .sort((a, b) => new Date(b[1].lastUpdate) - new Date(a[1].lastUpdate))
-          .map(([orderId, order]) => (
-          <div key={orderId} style={{
-            padding: '12px',
-            marginBottom: '8px',
-            background: order.isComplete ? '#f0fdf4' : '#fef3c7',
-            border: `2px solid ${order.isComplete ? '#10b981' : '#f59e0b'}`,
-            borderRadius: '8px',
-            fontSize: '12px'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '6px'
-            }}>
-              <strong style={{ fontSize: '13px' }}>Order #{orderId}</strong>
-              {order.isComplete && <span style={{ color: '#10b981', fontSize: '16px' }}>✓</span>}
-            </div>
-            <div style={{ color: '#374151', marginBottom: '4px' }}>
-              {order.isComplete ? '🍽️ Complete' : `🔄 ${order.currentAgentName}`}
-            </div>
-            <div style={{ color: '#6b7280', fontSize: '11px' }}>
-              {new Date(order.lastUpdate).toLocaleTimeString()}
-            </div>
-            <div style={{ 
-              marginTop: '6px', 
-              fontSize: '11px',
-              color: '#6b7280'
-            }}>
-              {order.events.length} events
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Active Orders Panel - REMOVED, now in left panel */}
       
       <ReactFlow
         nodes={nodes}
@@ -382,7 +477,7 @@ function App() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
-        fitView
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         attributionPosition="bottom-left"
       >
         <Controls />

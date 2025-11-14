@@ -39,6 +39,11 @@ export const useOrderStatus = () => {
           connection.on('OrderStatusUpdate', (event) => {
             console.log('📡 Order Status Update:', event);
             
+            // Log tool calls specifically (eventType 2 = ToolCalled)
+            if (event.eventType === 2) {
+              console.log('🔧 Tool Called:', event.toolCall?.name, 'by', event.agentName);
+            }
+            
             setOrderEvents(prev => [...prev, event]);
             
             setActiveOrders(prev => {
@@ -53,7 +58,7 @@ export const useOrderStatus = () => {
                   lastUpdate: event.timestamp,
                   lastEventType: event.eventType,
                   events: [...orderData.events, event],
-                  isComplete: event.eventType === 'OrderCompleted'
+                  isComplete: event.eventType === 4 // OrderCompleted = 4
                 }
               };
             });
