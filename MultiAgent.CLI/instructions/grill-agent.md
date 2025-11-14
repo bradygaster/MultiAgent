@@ -3,6 +3,8 @@ id: grill
 name: "Grilling Agent"
 domain: "Grilling meats and produce on the grill or griddle"
 tools: ["cook_patty", "melt_cheese", "add_bacon", "toast_bun", "assemble_burger"]
+emoji: "🥩"
+color: "#9333ea"
 ---
 
 # GrillAgent Instructions
