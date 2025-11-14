@@ -132,12 +132,12 @@ const initialNodes = [
 ];
 
 // Define the edges (connections between agents)
+// No sourceHandle/targetHandle specified - ReactFlow will automatically route based on node positions
 const initialEdges = [
   {
     id: 'e-order-grill',
     source: 'order',
     target: 'grill-agent',
-    targetHandle: 'left',
     animated: false,
     style: { stroke: '#6366f1', strokeWidth: 3 },
     label: 'Process Order',
@@ -146,9 +146,7 @@ const initialEdges = [
   {
     id: 'e-grill-fryer',
     source: 'grill-agent',
-    sourceHandle: 'right-source',
     target: 'fryer-agent',
-    targetHandle: 'left',
     animated: false,
     style: { stroke: '#dc2626', strokeWidth: 3 },
     label: 'Burgers Ready',
@@ -157,9 +155,7 @@ const initialEdges = [
   {
     id: 'e-fryer-dessert',
     source: 'fryer-agent',
-    sourceHandle: 'bottom-source',
     target: 'dessert-agent',
-    targetHandle: 'right',
     animated: false,
     style: { stroke: '#f59e0b', strokeWidth: 3 },
     label: 'Fries Ready',
@@ -168,9 +164,7 @@ const initialEdges = [
   {
     id: 'e-dessert-plating',
     source: 'dessert-agent',
-    sourceHandle: 'left-source',
     target: 'plating-agent',
-    targetHandle: 'right',
     animated: false,
     style: { stroke: '#ec4899', strokeWidth: 3 },
     label: 'Desserts Ready',
@@ -179,7 +173,6 @@ const initialEdges = [
   {
     id: 'e-plating-output',
     source: 'plating-agent',
-    sourceHandle: 'left-source',
     target: 'output',
     animated: false,
     style: { stroke: '#10b981', strokeWidth: 3 },
@@ -479,6 +472,14 @@ function App() {
         nodeTypes={nodeTypes}
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         attributionPosition="bottom-left"
+        connectionMode="loose"
+        snapToGrid={true}
+        snapGrid={[15, 15]}
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          animated: false,
+        }}
+        fitView
       >
         <Controls />
         <MiniMap 

@@ -15,7 +15,11 @@ const OutputNode = ({ data }) => {
         minWidth: '200px',
       }}
     >
+      {/* Multiple handles allow connections from any direction */}
+      <Handle type="target" position={Position.Top} style={{ background: '#16a34a' }} />
       <Handle type="target" position={Position.Bottom} style={{ background: '#16a34a' }} />
+      <Handle type="target" position={Position.Left} style={{ background: '#16a34a' }} />
+      <Handle type="target" position={Position.Right} style={{ background: '#16a34a' }} />
       
       <div style={{ textAlign: 'center' }}>
         {data.label}
