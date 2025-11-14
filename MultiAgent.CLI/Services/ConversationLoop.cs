@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 
 public class ConversationLoop(ILogger<ConversationLoop> logger,
+    AgentPool agentPool,
     BaseEventPublisher eventPublisher)
 {
     public async Task<List<ChatMessage>> ExecuteWorkflowAsync<TEvent>(
@@ -11,8 +12,7 @@ public class ConversationLoop(ILogger<ConversationLoop> logger,
         string userInput) where TEvent : WorkflowStatusEvent, new()
     {
         // Build the workflow using the definition
-        var workflowObject = workflowDefinition.BuildWorkflow(
-            eventPublisher.ServiceProvider.GetRequiredService<AgentPool>());
+        var workflowObject = workflowDefinition.BuildWorkflow(agentPool);
 
         // Cast to the workflow type expected by StreamAsync
         if (workflowObject is not Workflow workflow)

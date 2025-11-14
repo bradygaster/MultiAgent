@@ -2,14 +2,30 @@
 
 builder.AddServiceDefaults();
 
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.SetIsOriginAllowed(_ => true)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.AddSettings();
 builder.AddServices();
+
 var host = builder.Build();
-
+host.UseCors();
 host.MapDefaultEndpoints();
-
-// Start the OrderEventPublisher connection
-var eventPublisher = host.Services.GetRequiredService<BaseEventPublisher>();
-await eventPublisher.StartAsync();
+host.MapHub<OrderStatusHub>("/orderstatus");
+host.MapGet("/", () => "MultiAgent Status Hub - SignalR endpoint at /orderstatus");
 
 host.Run();

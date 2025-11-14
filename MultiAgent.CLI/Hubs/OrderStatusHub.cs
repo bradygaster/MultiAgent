@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using MultiAgent.StatusHub.Models;
-
-namespace MultiAgent.StatusHub.Hubs;
 
 public class OrderStatusHub : Hub
 {

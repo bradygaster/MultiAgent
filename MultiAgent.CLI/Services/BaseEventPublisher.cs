@@ -1,82 +1,17 @@
-using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR;
 
-public class BaseEventPublisher : IAsyncDisposable
+public class BaseEventPublisher(ILogger<BaseEventPublisher> logger,
+        IHubContext<OrderStatusHub> orderStatusHubContext)
 {
-    protected internal readonly HubConnection HubConnection;
-    protected internal readonly ILogger<BaseEventPublisher> Logger;
-    public IServiceProvider ServiceProvider { get; }
-
-    public BaseEventPublisher(IConfiguration config, ILogger<BaseEventPublisher> logger, IServiceProvider serviceProvider)
-    {
-        Logger = logger;
-        ServiceProvider = serviceProvider;
-        
-        // Get the StatusHub URL from Aspire service discovery
-        var hubUrl = config.GetConnectionString("statushub") ?? config["services:statushub:http:0"] ?? "http://localhost:5274";
-        
-        Logger.LogInformation("Connecting to OrderStatusHub at {HubUrl}", hubUrl);
-        
-        HubConnection = new HubConnectionBuilder()
-            .WithUrl($"{hubUrl}/orderstatus")
-            .WithAutomaticReconnect()
-            .Build();
-
-        HubConnection.Reconnecting += error =>
-        {
-            Logger.LogWarning(error, "SignalR connection lost, reconnecting...");
-            return Task.CompletedTask;
-        };
-
-        HubConnection.Reconnected += connectionId =>
-        {
-            Logger.LogInformation("SignalR reconnected with connection ID: {ConnectionId}", connectionId);
-            return Task.CompletedTask;
-        };
-
-        HubConnection.Closed += error =>
-        {
-            Logger.LogError(error, "SignalR connection closed");
-            return Task.CompletedTask;
-        };
-    }
-
-    public async Task StartAsync()
-    {
-        try
-        {
-            await HubConnection.StartAsync();
-            Logger.LogInformation("Connected to OrderStatusHub successfully");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to connect to OrderStatusHub");
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (HubConnection != null)
-        {
-            await HubConnection.DisposeAsync();
-        }
-    }
-
     protected internal async Task PublishEventAsync<TWorkflowStatusEvent>(TWorkflowStatusEvent e) where TWorkflowStatusEvent : WorkflowStatusEvent
     {
         try
         {
-            if (HubConnection.State == HubConnectionState.Connected)
-            {
-                await HubConnection.InvokeAsync($"Publish{e.GetType().Name}", e);
-            }
-            else
-            {
-                Logger.LogWarning("Cannot publish event - SignalR connection state is {State}", HubConnection.State);
-            }
+            await orderStatusHubContext.Clients.All.SendAsync($"{e.GetType().Name}", e);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to publish order event {e}", e);
+            logger.LogError(ex, "Failed to publish order event {e}", e);
         }
     }
 }

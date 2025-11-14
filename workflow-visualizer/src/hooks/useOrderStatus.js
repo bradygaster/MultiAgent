@@ -36,7 +36,7 @@ export const useOrderStatus = () => {
             .catch(err => console.error('Error subscribing to orders:', err));
 
           // Listen for order status updates
-          connection.on('OrderStatusUpdate', (event) => {
+          connection.on('OrderStatusEvent', (event) => {
             console.log('📡 Raw Order Status Update:', JSON.stringify(event, null, 2));
             console.log('   Properties:', Object.keys(event));
             console.log('   workflowEventType value:', event.workflowEventType, 'type:', typeof event.workflowEventType);

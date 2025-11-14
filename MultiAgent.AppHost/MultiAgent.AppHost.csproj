@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\McpServerHost\McpServerHost.csproj" />
     <ProjectReference Include="..\MultiAgent.CLI\MultiAgent.OrderSimulator.csproj" />
-    <ProjectReference Include="..\MultiAgent.StatusHub\MultiAgent.StatusHub.csproj" />
   </ItemGroup>
 
 </Project>
