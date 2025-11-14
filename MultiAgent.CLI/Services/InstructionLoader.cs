@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 public class InstructionData
 {
-    public InstructionMetadata Metadata { get; set; } = new();
+    public AgentMetadata Metadata { get; set; } = new();
     public string Content { get; set; } = string.Empty;
 }
 
@@ -60,9 +60,9 @@ public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<Mu
         };
     }
     
-    private (InstructionMetadata metadata, string content) ParseFrontMatter(string fileContent)
+    private (AgentMetadata metadata, string content) ParseFrontMatter(string fileContent)
     {
-        var metadata = new InstructionMetadata();
+        var metadata = new AgentMetadata();
         var content = fileContent;
 
         if (fileContent.StartsWith("---"))
@@ -78,7 +78,7 @@ public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<Mu
                     var deserializer = new DeserializerBuilder()
                         .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
                         .Build();
-                    metadata = deserializer.Deserialize<InstructionMetadata>(frontMatterYaml) ?? new InstructionMetadata();
+                    metadata = deserializer.Deserialize<AgentMetadata>(frontMatterYaml) ?? new AgentMetadata();
                 }
                 catch (Exception ex)
                 {

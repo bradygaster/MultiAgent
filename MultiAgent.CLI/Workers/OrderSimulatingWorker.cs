@@ -1,6 +1,4 @@
-﻿namespace MultiAgent.CLI;
-
-public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
+﻿public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
     ConversationLoop conversation) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

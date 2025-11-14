@@ -24,22 +24,22 @@
 	</ItemGroup>
 
     <ItemGroup>
-        <None Update="instructions\**\*.*">
+        <None Update="Instructions\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="instructions\dessert-agent.md">
+        <None Update="Instructions\dessert-agent.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="instructions\fryer-agent.md">
+        <None Update="Instructions\fryer-agent.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="instructions\grill-agent.md">
+        <None Update="Instructions\grill-agent.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="instructions\plating-agent.md">
+        <None Update="Instructions\plating-agent.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
