@@ -2,52 +2,13 @@
 using Microsoft.Extensions.AI;
 using System.Text;
 using System.Text.Json;
-using MultiAgent.CLI.Services;
 
-public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> logger, OrderEventPublisher eventPublisher)
+public class ConversationLoop(ILogger<ConversationLoop> logger,
+    AgentPool agentPool,
+    BaseEventPublisher eventPublisher)
 {
-    public async Task<List<ChatMessage>> SubmitRandomOrder()
+    public async Task<List<ChatMessage>> SendPrompt(string prompt)
     {
-        var randomOrders = new List<string>
-        {
-            "1 cheeseburger with fries and a chocolate milkshake",
-            "2 cheeseburgers, 2 orders of fries, and 2 chocolate milkshakes",
-            "2 cheeseburgers, 1 order of regular fries without salt, 1 order of sweet potato fries, and 2 strawberry milkshakes",
-            "2 vanilla milkshakes and 1 order of onion rings",
-            "1 sundae with whipped cream and a cherry on top",
-            "1 cheeseburger with extra cheese, 1 order of fries, and 1 vanilla milkshake with sprinkles",
-            "2 cheeseburgers, 1 order of sweet potato fries, and 2 chocolate milkshakes with whipped cream",
-            "1 cheeseburger with bacon, 1 order of fries without salt, and 1 strawberry milkshake with a cherry on top",
-            "2 cheeseburgers and 5 chocolate milkshakes",
-            "2 cheeseburgers with extra cheese, 2 with bacon, 2 orders of sweet potato fries, 1 with no salt"
-        };
-
-        return await SubmitOrder(randomOrders[new Random().Next(randomOrders.Count)]);
-    }
-
-    public async Task<List<ChatMessage>> SubmitOrder(string order)
-    {
-        var orderId = Guid.NewGuid().ToString("N")[..8];
-        
-        // Publish order received event
-        await eventPublisher.PublishEventAsync(new OrderStatusEvent
-        {
-            OrderId = orderId,
-            AgentId = "system",
-            AgentName = "System",
-            EventType = OrderEventType.OrderReceived,
-            Message = order,
-            Timestamp = DateTime.UtcNow
-        });
-
-        // Build a strict preamble that instructs all agents not to invent items and to use defaults.
-        var preamble = new System.Text.StringBuilder();
-        preamble.AppendLine("ORDER SUMMARY:");
-        preamble.AppendLine(order.Trim());
-        preamble.AppendLine();
-
-        var initialMessage = new ChatMessage(ChatRole.User, preamble.ToString());
-
         // Build the linear workflow through the agents in the intended order.
         var workflow = AgentWorkflowBuilder.BuildSequential(
             agentPool.GetAgent(AgentIdentifiers.GrillAgent)!,
@@ -56,10 +17,32 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
             agentPool.GetAgent(AgentIdentifiers.PlatingAgent)!
             );
 
-        string? lastExecutorId = null;
+        string? lastExecutorId = null; 
+        
+        var orderId = Guid.NewGuid().ToString("N")[..8];
+
+        // Publish order received event
+        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+        {
+            OrderId = orderId,
+            AgentId = "system",
+            AgentName = "System",
+            WorkflowEventType = WorkflowEventType.WorkflowStarted,
+            OrderEventType = OrderEventType.OrderReceived,
+            Message = prompt,
+            Timestamp = DateTime.UtcNow
+        });
+
+        // Build a strict preamble that instructs all agents not to invent items and to use defaults.
+        var preamble = new System.Text.StringBuilder();
+        preamble.AppendLine("ORDER SUMMARY:");
+        preamble.AppendLine(prompt.Trim());
+        preamble.AppendLine();
+
+        var initialMessage = new ChatMessage(ChatRole.User, preamble.ToString());
 
         // Start a fresh streaming run for this order so previous conversation state does not leak.
-        using(var session = TelemetryConfig.OrderWorkflowActivitySource.StartActivity("ConversationLoop.SubmitOrder", System.Diagnostics.ActivityKind.Server))
+        using (var session = TelemetryConfig.OrderWorkflowActivitySource.StartActivity("ConversationLoop.SubmitOrder", System.Diagnostics.ActivityKind.Server))
         {
             session.Start();
 
@@ -83,8 +66,8 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                             OrderId = orderId,
                             AgentId = e.ExecutorId,
                             AgentName = e.Update.AuthorName,
-                            EventType = OrderEventType.AgentStarted,
-                            Message = $"{e.Update.AuthorName} starting",
+                            WorkflowEventType = WorkflowEventType.AgentStarted,
+                            Message = $"🕵️ {e.Update.AuthorName} starting",
                             Timestamp = DateTime.UtcNow
                         });
                     }
@@ -101,7 +84,7 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                             OrderId = orderId,
                             AgentId = e.ExecutorId,
                             AgentName = e.Update.AuthorName,
-                            EventType = OrderEventType.ToolCalled,
+                            WorkflowEventType = WorkflowEventType.ToolCalled,
                             Message = $"Calling {call.Name}",
                             Timestamp = DateTime.UtcNow,
                             ToolCall = new Dictionary<string, object>
@@ -123,7 +106,7 @@ public class ConversationLoop(AgentPool agentPool, ILogger<ConversationLoop> log
                         OrderId = orderId,
                         AgentId = "system",
                         AgentName = "System",
-                        EventType = OrderEventType.OrderCompleted,
+                        OrderEventType = OrderEventType.OrderCompleted,
                         Message = "Order completed successfully",
                         Timestamp = DateTime.UtcNow
                     });

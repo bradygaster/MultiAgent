@@ -4,7 +4,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
 using OpenAI;
-using MultiAgent.CLI.Services;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -14,8 +13,14 @@ internal static class AddServicesExtension
     {
         builder.AddMcpClient();
         builder.Services.AddSingleton<InstructionLoader>();
-        builder.Services.AddSingleton<OrderEventPublisher>();
+        builder.Services.AddSingleton<BaseEventPublisher>();
 
+        // order workflow related services
+        builder.Services.AddSingleton<IOrderGenerator, StaticOrderGenerator>();
+        builder.Services.AddSingleton<OrderEventPublisher>();
+        builder.Services.AddHostedService<OrderSimulatingWorker>();
+
+        // set up the agent pool
         _ = builder.Services.AddSingleton<AgentPool>(services =>
         {
             var azureOptions = services.GetRequiredService<IOptions<AzureSettings>>().Value;
