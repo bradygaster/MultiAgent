@@ -28,8 +28,8 @@ public class OrderStatusHub : Hub
         
         _orderHistory[evt.OrderId].Add(evt);
         
-        _logger.LogDebug("📻 Publishing order event: {EventType} for Order {OrderId} Agent {AgentName}", 
-            evt.EventType, evt.OrderId, evt.AgentName);
+        _logger.LogDebug("📻 Publishing order event: WorkflowEventType={WorkflowEventType} OrderEventType={OrderEventType} for Order {OrderId} Agent {AgentName}", 
+            evt.WorkflowEventType, evt.OrderEventType, evt.OrderId, evt.AgentName);
         
         await Clients.Group("OrderUpdates").SendAsync("OrderStatusUpdate", evt);
     }

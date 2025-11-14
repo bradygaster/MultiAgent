@@ -199,7 +199,11 @@ function App() {
 
   // Update global tool counts whenever a new tool is called
   useEffect(() => {
-    const toolEvents = orderEvents.filter(e => e.eventType === 2);
+    const toolEvents = orderEvents.filter(e => e.workflowEventType === 4); // ToolCalled = 4
+    console.log('🔍 Filtering tool events. Total events:', orderEvents.length, 'Tool events:', toolEvents.length);
+    if (toolEvents.length > 0) {
+      console.log('   Sample tool event:', toolEvents[0]);
+    }
     const newCounts = {};
     
     toolEvents.forEach(event => {
@@ -235,17 +239,24 @@ function App() {
             ? activeOrdersForAgent.sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))[0]
             : null;
           
-          // Match by agentName - eventType is a number (ToolCalled = 2)
+          // Match by agentName - workflowEventType is a number (ToolCalled = 4)
           const recentToolEvents = orderEvents
             .filter(e => {
-              if (e.eventType !== 2) return false; // ToolCalled = 2
+              if (e.workflowEventType !== 4) return false; // ToolCalled = 4
               
               const nameMatch = e.agentName?.toLowerCase().includes(node.data.name.toLowerCase());
+              if (nameMatch) {
+                console.log(`✅ Tool event matched for ${node.data.name}:`, e.toolCall?.name);
+              }
               return nameMatch;
             })
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
           
           const lastTool = recentToolEvents[0]?.toolCall?.name;
+          
+          if (lastTool) {
+            console.log(`📌 Setting lastToolCalled for ${node.data.name}:`, lastTool);
+          }
 
           return {
             ...node,
@@ -373,7 +384,7 @@ function App() {
             {Object.entries(activeOrders)
               .sort((a, b) => new Date(b[1].lastUpdate) - new Date(a[1].lastUpdate))
               .map(([orderId, order]) => {
-                const firstEvent = order.events.find(e => e.eventType === 'OrderReceived');
+                const firstEvent = order.events.find(e => e.orderEventType === 0); // OrderReceived = 0
                 const orderMessage = firstEvent?.message || 'Order in progress';
                 
                 return (

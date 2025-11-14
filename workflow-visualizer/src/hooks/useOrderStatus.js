@@ -37,10 +37,13 @@ export const useOrderStatus = () => {
 
           // Listen for order status updates
           connection.on('OrderStatusUpdate', (event) => {
-            console.log('📡 Order Status Update:', event);
+            console.log('📡 Raw Order Status Update:', JSON.stringify(event, null, 2));
+            console.log('   Properties:', Object.keys(event));
+            console.log('   workflowEventType value:', event.workflowEventType, 'type:', typeof event.workflowEventType);
+            console.log('   orderEventType value:', event.orderEventType, 'type:', typeof event.orderEventType);
             
-            // Log tool calls specifically (eventType 2 = ToolCalled)
-            if (event.eventType === 2) {
+            // Log tool calls specifically (workflowEventType 4 = ToolCalled)
+            if (event.workflowEventType === 4) {
               console.log('🔧 Tool Called:', event.toolCall?.name, 'by', event.agentName);
             }
             
@@ -56,9 +59,9 @@ export const useOrderStatus = () => {
                   currentAgent: event.agentId,
                   currentAgentName: event.agentName,
                   lastUpdate: event.timestamp,
-                  lastEventType: event.eventType,
+                  lastEventType: event.workflowEventType,
                   events: [...orderData.events, event],
-                  isComplete: event.eventType === 4 // OrderCompleted = 4
+                  isComplete: event.orderEventType === 1 // OrderCompleted = 1
                 }
               };
             });
