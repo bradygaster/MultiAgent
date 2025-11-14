@@ -23,6 +23,9 @@ public class ShakeTool(ILogger<ShakeTool> logger)
     [McpServerTool(Name = "fry_fries"), Description("Fry standard French fries.")]
     public string FryStandard(FryStandardRequest request) => LogAndReturn($"🍟 Frying {request.Portion} portion of standard fries for {request.Duration} minutes... Crispy golden fries ready!");
 
+    [McpServerTool(Name = "fry_onion_rings"), Description("Fry standard French fries.")]
+    public string FryOnionRings(FryOnionRingsRequest request) => LogAndReturn($"🧅 Frying {request.Portion} portion of onion rings for {request.Duration} minutes... Crispy golden fries ready!");
+
     [McpServerTool(Name = "fry_waffle_fries"), Description("Fry waffle-cut French fries.")]
     public string FryWaffle(FryWaffleRequest request) => LogAndReturn($"🧇 Frying {request.Portion} portion of waffle fries for {request.Duration} minutes... Crispy waffle-cut fries ready!");
 
@@ -40,7 +43,7 @@ public class ShakeTool(ILogger<ShakeTool> logger)
     [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for deliverty.")]
     public string BagFriesForOrder() => LogAndReturn($"🍟 Bagging up order of fries ... Fries ready!");
 
-    [McpServerTool(Name = "grill_burger_patty"), Description("Grill a beef patty.")]
+    [McpServerTool(Name = "cook_patty"), Description("Grill a beef patty.")]
     public string CookPatty(CookPattyRequest request) => LogAndReturn($"🥩 Cooking {request.PattyType} patty to {request.Doneness} doneness... Done! Perfectly cooked patty ready.");
 
     [McpServerTool(Name = "melt_cheese"), Description("Melt cheese on a burger patty.")]
@@ -49,14 +52,14 @@ public class ShakeTool(ILogger<ShakeTool> logger)
     [McpServerTool(Name = "add_bacon"), Description("Add crispy bacon strips to a burger.")]
     public string AddBacon(AddBaconRequest request) => LogAndReturn($"🥓 Adding {request.BaconStrips} strips of crispy bacon... Bacon perfectly placed!");
 
-    [McpServerTool(Name = "grill_bun"), Description("Toast burger buns to specified level.")]
+    [McpServerTool(Name = "toast_bun"), Description("Toast burger buns to specified level.")]
     public string ToastBun(ToastBunRequest request) => LogAndReturn($"🍞 Toasting {request.BunType} bun to {request.ToastLevel}... Golden brown perfection!");
 
     [McpServerTool(Name = "assemble_burger"), Description("Assemble a burger with specified components.")]
     public string AssembleBurger(AssembleBurgerRequest request) => LogAndReturn($"🍔 Assembling burger with {request.Components}... Perfectly assembled burger ready!");
 
     [McpServerTool(Name = "plate_meal"), Description("Plate a meal with proper presentation.")]
-    public string PlateMeal(PlateMealRequest request) => LogAndReturn($"🍽️ Plating meal for {request.Service} with {request.Presentation}... Meal beautifully presented!");
+    public string PlateMeal(PlateMealRequest request) => LogAndReturn($"🍽️ Plating meal for {request.Items} with {request.Accessories}... Meal beautifully presented!");
 
     [McpServerTool(Name = "package_for_takeout"), Description("Package food items for takeout.")]
     public string PackageTakeout(PackageTakeoutRequest request) => LogAndReturn($"📦 Packaging {request.Items} for takeout with {request.Accessories}... Order ready for pickup!");

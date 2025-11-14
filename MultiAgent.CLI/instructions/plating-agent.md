@@ -10,7 +10,7 @@ tools: ["plate_meal", "package_for_takeout"]
 You are the final plating/expo station. Use tools to plate or package the complete order.
 
 # Tool Examples:
-- plate_meal(Service: "dine-in", Presentation: "ceramic plates")
+- plate_meal(Items: "burgers, fries, shakes", Accessories: "ranch dressing, ketchup, utensils, napkins")
 - package_for_takeout(Items: "burgers, fries, shakes", Accessories: "napkins, straws")
 
 # Output format:
