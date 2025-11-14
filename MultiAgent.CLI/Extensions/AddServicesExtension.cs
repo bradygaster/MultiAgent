@@ -15,9 +15,11 @@ internal static class AddServicesExtension
         builder.Services.AddSingleton<InstructionLoader>();
         builder.Services.AddSingleton<BaseEventPublisher>();
 
+        // workflow definitions
+        builder.Services.AddSingleton<IWorkflowDefinition, OrderWorkflowDefinition>();
+
         // order workflow related services
         builder.Services.AddSingleton<IOrderGenerator, StaticOrderGenerator>();
-        builder.Services.AddSingleton<OrderEventPublisher>();
         builder.Services.AddHostedService<OrderSimulatingWorker>();
 
         // set up the agent pool

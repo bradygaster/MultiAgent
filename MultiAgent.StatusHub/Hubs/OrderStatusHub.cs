@@ -19,7 +19,7 @@ public class OrderStatusHub : Hub
         _logger.LogInformation("📻 Client {ConnectionId} subscribed to order updates", Context.ConnectionId);
     }
 
-    public async Task PublishOrderEvent(OrderStatusEvent evt)
+    public async Task PublishOrderStatusEvent(OrderStatusEvent evt)
     {
         if (!_orderHistory.ContainsKey(evt.OrderId))
         {

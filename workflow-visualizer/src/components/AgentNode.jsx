@@ -102,18 +102,6 @@ const AgentNode = ({ data }) => {
               gap: '8px'
             }}>
               {data.name}
-              {data.activeOrders > 0 && (
-                <span style={{
-                  background: data.color,
-                  color: 'white',
-                  fontSize: '11px',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  fontWeight: 'bold'
-                }}>
-                  {data.activeOrders}
-                </span>
-              )}
             </div>
             <div style={{ 
               fontSize: '12px', 

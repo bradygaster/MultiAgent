@@ -1,4 +1,9 @@
-﻿public class StaticOrderGenerator(
+﻿public interface IOrderGenerator
+{
+    Task<string> GenerateRandomOrder();
+}
+
+public class StaticOrderGenerator(
     ILogger<StaticOrderGenerator> logger,
     BaseEventPublisher eventPublisher) : IOrderGenerator
 {

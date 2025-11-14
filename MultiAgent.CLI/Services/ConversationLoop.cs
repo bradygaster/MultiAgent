@@ -4,47 +4,46 @@ using System.Text;
 using System.Text.Json;
 
 public class ConversationLoop(ILogger<ConversationLoop> logger,
-    AgentPool agentPool,
     BaseEventPublisher eventPublisher)
 {
-    public async Task<List<ChatMessage>> SendPrompt(string prompt)
+    public async Task<List<ChatMessage>> ExecuteWorkflowAsync<TEvent>(
+        IWorkflowDefinition workflowDefinition,
+        string userInput) where TEvent : WorkflowStatusEvent, new()
     {
-        // Build the linear workflow through the agents in the intended order.
-        var workflow = AgentWorkflowBuilder.BuildSequential(
-            agentPool.GetAgent(AgentIdentifiers.GrillAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.FryerAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.DessertAgent)!,
-            agentPool.GetAgent(AgentIdentifiers.PlatingAgent)!
-            );
+        // Build the workflow using the definition
+        var workflowObject = workflowDefinition.BuildWorkflow(
+            eventPublisher.ServiceProvider.GetRequiredService<AgentPool>());
 
-        string? lastExecutorId = null; 
-        
-        var orderId = Guid.NewGuid().ToString("N")[..8];
-
-        // Publish order received event
-        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+        // Cast to the workflow type expected by StreamAsync
+        if (workflowObject is not Workflow workflow)
         {
-            OrderId = orderId,
+            throw new InvalidOperationException($"BuildWorkflow must return a Workflow instance, but returned {workflowObject?.GetType().Name ?? "null"}");
+        }
+
+        string? lastExecutorId = null;
+        
+        var instanceId = workflowDefinition.GenerateWorkflowInstanceId();
+
+        // Publish workflow started event
+        var startEvent = new TEvent
+        {
             AgentId = "system",
             AgentName = "System",
             WorkflowEventType = WorkflowEventType.WorkflowStarted,
-            OrderEventType = OrderEventType.OrderReceived,
-            Message = prompt,
+            Message = userInput,
             Timestamp = DateTime.UtcNow
-        });
+        };
+        
+        workflowDefinition.EnrichEvent(startEvent, instanceId, WorkflowEventType.WorkflowStarted);
+        await eventPublisher.PublishEventAsync(startEvent);
 
-        // Build a strict preamble that instructs all agents not to invent items and to use defaults.
-        var preamble = new System.Text.StringBuilder();
-        preamble.AppendLine("ORDER SUMMARY:");
-        preamble.AppendLine(prompt.Trim());
-        preamble.AppendLine();
-
-        var initialMessage = new ChatMessage(ChatRole.User, preamble.ToString());
+        // Build the initial message using the workflow definition
+        var initialMessage = workflowDefinition.BuildInitialMessage(userInput);
 
         // Start a fresh streaming run for this order so previous conversation state does not leak.
         using (var session = TelemetryConfig.OrderWorkflowActivitySource.StartActivity("ConversationLoop.SubmitOrder", System.Diagnostics.ActivityKind.Server))
         {
-            session.Start();
+            session?.Start();
 
             await using StreamingRun run = await InProcessExecution.StreamAsync(workflow: workflow, initialMessage);
             await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
@@ -61,15 +60,17 @@ public class ConversationLoop(ILogger<ConversationLoop> logger,
                         logger.LogInformation($"🕵️ AgentRunUpdateEvent: {e.Update.AuthorName} starting");
                         
                         // Publish agent started event
-                        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                        var agentEvent = new TEvent
                         {
-                            OrderId = orderId,
                             AgentId = e.ExecutorId,
-                            AgentName = e.Update.AuthorName,
+                            AgentName = e.Update.AuthorName ?? "Unknown",
                             WorkflowEventType = WorkflowEventType.AgentStarted,
                             Message = $"🕵️ {e.Update.AuthorName} starting",
                             Timestamp = DateTime.UtcNow
-                        });
+                        };
+                        
+                        workflowDefinition.EnrichEvent(agentEvent, instanceId, WorkflowEventType.AgentStarted);
+                        await eventPublisher.PublishEventAsync(agentEvent);
                     }
 
                     sb.Append(e.Update.Text);
@@ -79,20 +80,22 @@ public class ConversationLoop(ILogger<ConversationLoop> logger,
                         logger.LogInformation($"📡 Calling MCP Tool '{call.Name}' with arguments: {JsonSerializer.Serialize(call.Arguments)}]");
                         
                         // Publish tool call event
-                        await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                        var toolEvent = new TEvent
                         {
-                            OrderId = orderId,
                             AgentId = e.ExecutorId,
-                            AgentName = e.Update.AuthorName,
+                            AgentName = e.Update.AuthorName ?? "Unknown",
                             WorkflowEventType = WorkflowEventType.ToolCalled,
                             Message = $"Calling {call.Name}",
                             Timestamp = DateTime.UtcNow,
                             ToolCall = new Dictionary<string, object>
                             {
                                 ["name"] = call.Name,
-                                ["arguments"] = call.Arguments ?? new Dictionary<string, object>()
+                                ["arguments"] = call.Arguments ?? new Dictionary<string, object?>()
                             }
-                        });
+                        };
+                        
+                        workflowDefinition.EnrichEvent(toolEvent, instanceId, WorkflowEventType.ToolCalled);
+                        await eventPublisher.PublishEventAsync(toolEvent);
                     }
                 }
                 else if (evt is WorkflowOutputEvent output)
@@ -100,23 +103,25 @@ public class ConversationLoop(ILogger<ConversationLoop> logger,
                     logger.LogInformation($"📒 Output of order fulfillment process: \n {sb.ToString()}");
                     sb.Clear();
 
-                    // Publish order completed event
-                    await eventPublisher.PublishEventAsync(new OrderStatusEvent
+                    // Publish workflow completed event
+                    var completeEvent = new TEvent
                     {
-                        OrderId = orderId,
                         AgentId = "system",
                         AgentName = "System",
-                        OrderEventType = OrderEventType.OrderCompleted,
-                        Message = "Order completed successfully",
+                        WorkflowEventType = WorkflowEventType.WorkflowEnded,
+                        Message = $"{workflowDefinition.Name} completed successfully",
                         Timestamp = DateTime.UtcNow
-                    });
+                    };
+                    
+                    workflowDefinition.EnrichEvent(completeEvent, instanceId, WorkflowEventType.WorkflowEnded);
+                    await eventPublisher.PublishEventAsync(completeEvent);
 
                     // Return the list of chat messages produced by the workflow
                     return output.As<List<ChatMessage>>() ?? new List<ChatMessage>();
                 }
             }
 
-            session.Stop();
+            session?.Stop();
         }
         
 

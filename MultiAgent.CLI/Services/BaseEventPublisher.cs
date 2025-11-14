@@ -4,10 +4,12 @@ public class BaseEventPublisher : IAsyncDisposable
 {
     protected internal readonly HubConnection HubConnection;
     protected internal readonly ILogger<BaseEventPublisher> Logger;
+    public IServiceProvider ServiceProvider { get; }
 
-    public BaseEventPublisher(IConfiguration config, ILogger<BaseEventPublisher> logger)
+    public BaseEventPublisher(IConfiguration config, ILogger<BaseEventPublisher> logger, IServiceProvider serviceProvider)
     {
         Logger = logger;
+        ServiceProvider = serviceProvider;
         
         // Get the StatusHub URL from Aspire service discovery
         var hubUrl = config.GetConnectionString("statushub") ?? config["services:statushub:http:0"] ?? "http://localhost:5274";
@@ -65,7 +67,7 @@ public class BaseEventPublisher : IAsyncDisposable
         {
             if (HubConnection.State == HubConnectionState.Connected)
             {
-                await HubConnection.InvokeAsync("PublishOrderEvent", e);
+                await HubConnection.InvokeAsync($"Publish{e.GetType().Name}", e);
             }
             else
             {
