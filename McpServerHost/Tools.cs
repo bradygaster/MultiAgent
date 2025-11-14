@@ -6,7 +6,6 @@ public class ShakeTool(ILogger<ShakeTool> logger)
 {
     private string LogAndReturn(string input)
     {
-        Thread.Sleep(500); // Simulate some processing time 
         logger.LogInformation(input);
         return input;
     }
