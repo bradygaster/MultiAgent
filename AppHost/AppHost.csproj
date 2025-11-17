@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\McpServerHost\McpServerHost.csproj" />
-    <ProjectReference Include="..\MultiAgent.CLI\MultiAgent.OrderSimulator.csproj" />
+    <ProjectReference Include="..\McpHost\McpHost.csproj" />
+    <ProjectReference Include="..\AgentHost\AgentHost.csproj" />
   </ItemGroup>
 
 </Project>

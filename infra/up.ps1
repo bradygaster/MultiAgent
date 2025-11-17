@@ -14,7 +14,7 @@ $MODEL_NAME = "gpt-4o"
 $MODEL_VERSION = "2024-11-20"
 $AI_PROJECT_FRIENDLY_NAME = "Multi Agent"
 $MODEL_CAPACITY = 10
-$DISABLE_LOCAL_AUTH = $false
+$DISABLE_LOCAL_AUTH = $true
 
 # Deploy the Azure resources and save output to JSON
 az deployment sub create `
@@ -53,7 +53,7 @@ if ([string]::IsNullOrEmpty($openAIEndpoint)) {
 }
 
 # Set the C# project path relative to the script directory
-$CSHARP_PROJECT_PATH = Join-Path -Path $scriptDir -ChildPath "..\MultiAgent.csproj"
+$CSHARP_PROJECT_PATH = Join-Path -Path $scriptDir -ChildPath "..\AgentHost\AgentHost.csproj"
 
 # Set the user secrets for the C# project
 dotnet user-secrets set "Azure:Endpoint" "$openAIEndpoint" --project "$CSHARP_PROJECT_PATH"

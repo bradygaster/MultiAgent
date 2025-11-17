@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AgentHost/AgentHost.csproj" />
+  <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="McpHost/McpHost.csproj" />
+  <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
+</Solution>
