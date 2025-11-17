@@ -1,4 +1,3 @@
-using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 
 public interface IWorkflowDefinition
