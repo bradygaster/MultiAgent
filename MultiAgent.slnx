@@ -2,6 +2,9 @@
   <Folder Name="/Solution Items/" />
   <Project Path="AgentHost/AgentHost.csproj" />
   <Project Path="AppHost/AppHost.csproj" />
-  <Project Path="McpHost/McpHost.csproj" />
+  <Project Path="DessertTools/DessertTools.csproj" />
+  <Project Path="ExpoTools/ExpoTools.csproj" />
+  <Project Path="FryerTools/FryerTools.csproj" />
+  <Project Path="GrillTools/GrillTools.csproj" />
   <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
 </Solution>

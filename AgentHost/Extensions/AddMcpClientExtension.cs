@@ -4,11 +4,26 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class AddMcpClientExtension
 {
-    public static IHostApplicationBuilder AddMcpClient(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMcpClients(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddTransient<McpClient>(sp =>
+        var multiAgentSettings = builder.Configuration.GetSection("MultiAgent").Get<MultiAgentSettings>();
+
+        foreach (var mcpServer in multiAgentSettings.McpServers)
+        {
+            builder = builder.AddMcpClient(mcpServer);
+        }
+
+
+        return builder;
+    }
+
+    public static IHostApplicationBuilder AddMcpClient(this IHostApplicationBuilder builder, string referenceName)
+    {
+        builder.Services.AddKeyedTransient<McpClient>(referenceName, (sp, key) =>
         {
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            var multiAgentSettings = config.GetSection("MultiAgent").Get<MultiAgentSettings>();
 
             McpClientOptions mcpClientOptions = new()
             {
@@ -19,10 +34,13 @@ public static class AddMcpClientExtension
                 }
             };
 
+            var referenceTemplate = "services:{0}:https:0";
+            var endpoint = config[string.Format(referenceTemplate, key)];
+
             using var mcpClient = McpClient.CreateAsync(
                     new HttpClientTransport(new()
                     {
-                        Endpoint = new Uri("https://localhost:7148"),
+                        Endpoint = new Uri(endpoint),
                     }), mcpClientOptions, loggerFactory);
 
             var result = mcpClient.ConfigureAwait(false).GetAwaiter().GetResult();

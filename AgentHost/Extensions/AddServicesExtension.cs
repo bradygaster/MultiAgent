@@ -3,6 +3,7 @@ using Azure.Identity;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
@@ -11,7 +12,7 @@ internal static class AddServicesExtension
 {
     public static IHostApplicationBuilder AddServices(this IHostApplicationBuilder builder)
     {
-        builder.AddMcpClient();
+        builder.AddMcpClients();
         builder.Services.AddSingleton<InstructionLoader>();
         builder.Services.AddSingleton<BaseEventPublisher>();
         builder.Services.AddSingleton<IOrderHistoryStore, InMemoryOrderHistoryStore>();
@@ -52,23 +53,38 @@ internal static class AddServicesExtension
             // Create agent pool and populate it
             var agentPool = new AgentPool();
 
+            // All the MCP Client tools available across all the servers
+            var allMcpClientTools = new Dictionary<string, AITool>();
+
+            foreach (var mcpServer in appSettings.McpServers)
+            {
+                var mcpClient = services.GetKeyedService<McpClient>(mcpServer);
+                if (mcpClient == null)
+                    throw new InvalidOperationException("McpClient service not available.");
+                var tools = mcpClient.ListToolsAsync().GetAwaiter().GetResult();
+                foreach (var tool in tools)
+                {
+                    if (!allMcpClientTools.ContainsKey(tool.Name))
+                    {
+                        allMcpClientTools[tool.Name] = tool;
+                    }
+                }
+            }
+
             // Get the tools available for each agent
-            var mcpClient = services.GetService<McpClient>();
-            if (mcpClient == null)
-                throw new InvalidOperationException("McpClient service not available.");
-
-            var tools = mcpClient.ListToolsAsync().GetAwaiter().GetResult();
-
             foreach (var (key, instructionData) in allInstructions)
             {
-                var filteredTools = tools
-                    .Where(t => instructionData.Metadata.Tools.Contains(t.Name))
+                var filteredTools = allMcpClientTools
+                    .Where(t => instructionData.Metadata.Tools.Contains(t.Key))
+                    .Select(t => t.Value)
                     .ToList();
+
+                var convertedTools = filteredTools.Cast<AITool>().ToList();
 
                 var agent = chatClient.CreateAIAgent(
                     name: instructionData.Metadata.Name,
                     instructions: instructionData.Content,
-                    tools: filteredTools.Cast<AITool>().ToList()
+                    tools: convertedTools
                 );
 
                 agentPool.AddAgent(instructionData.Metadata.Id, agent, instructionData.Metadata);

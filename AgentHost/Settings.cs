@@ -1,6 +1,7 @@
 public class MultiAgentSettings
 {
     public string InstructionsPath { get; set; } = "instructions";
+    public List<string> McpServers { get; set; } = new List<string>();
 }
 
 public class AzureSettings
