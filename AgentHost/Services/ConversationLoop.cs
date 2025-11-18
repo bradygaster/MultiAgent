@@ -10,6 +10,7 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
         workflowDefinition.EnrichEvent(evt, instanceId, eventType);
         await eventPublisher.PublishEventAsync(evt);
     }
+
     public async Task<List<ChatMessage>> ExecuteWorkflowAsync<TEvent>(
         IWorkflowDefinition workflowDefinition,
         string userInput) where TEvent : WorkflowStatusEvent, new()

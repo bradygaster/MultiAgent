@@ -30,6 +30,14 @@ This document outlines all identified cleanup opportunities in the MultiAgent re
 - **Priority:** Low
 - **Effort:** Low
 
+### 1.4 Generic Constraint Issue in OrderSimulatingWorker ✅ Completed 2025-11-18
+**Location:** `AgentHost/Workflows/Orders/OrderSimulatingWorker.cs`
+- **Issue:** `OrderStatusEvent` could not satisfy the `new()` constraint in `ConversationLoop.ExecuteWorkflowAsync<TEvent>` due to required members
+- **Impact:** Compiler error CS9040, build failure
+- **Fix:** Refactored usage or type to satisfy generic constraint and resolve required members issue
+- **Priority:** High
+- **Effort:** Medium
+
 ---
 
 ## 2. Package & Dependency Management
@@ -143,6 +151,7 @@ This document outlines all identified cleanup opportunities in the MultiAgent re
 ### High Priority (Do First)
 1. ✅ OpenTelemetry version consistency
 2. ✅ Hardcoded MCP client URL
+3. ✅ Generic constraint issue in OrderSimulatingWorker
 
 ### Medium Priority (Do Second)
 1. ✅ Remove unnecessary package references
