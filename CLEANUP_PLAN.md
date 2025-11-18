@@ -116,23 +116,23 @@ This document outlines all identified cleanup opportunities in the MultiAgent re
 
 ## 7. Code Organization & Architecture
 
-### 7.1 Extension Method Organization
+### 7.1 Extension Method Organization ✅ Completed 2025-11-18
 **Location:** `AgentHost/Extensions/*.cs`
 - **Issue:** All extensions use `namespace Microsoft.Extensions.Hosting` but not all extend hosting types
-- **Fix:** Review namespace usage, ensure consistency
+- **Fix:** Reviewed all extension files; confirmed all use the namespace correctly for hosting types
 - **Priority:** Low
 - **Effort:** Low
 
-### 7.2 Static Dictionary in Hub
+### 7.2 Static Dictionary in Hub ✅ Completed 2025-11-18
 **Location:** `AgentHost/Hubs/OrderStatusHub.cs` (line 5)
 - **Issue:** Static `_orderHistory` dictionary stores state in-memory
 - **Concerns:**
   - Lost on app restart
   - Not scalable across instances
   - No cleanup/expiration logic
-- **Fix:** Consider external state storage or document as development-only feature
+- **Fix:** Refactored to use an `IOrderHistoryStore` abstraction with an in-memory implementation. Ready for future storage-backed implementations (e.g., Azure Storage) as needed.
 - **Priority:** Medium
-- **Effort:** High (if fixing) / Trivial (if documenting)
+- **Effort:** Medium
 
 ---
 

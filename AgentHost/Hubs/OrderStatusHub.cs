@@ -2,12 +2,14 @@
 
 public class OrderStatusHub : Hub
 {
-    private static readonly Dictionary<string, List<OrderStatusEvent>> _orderHistory = new();
+    // NOTE: Order history storage is now abstracted for flexibility and testability.
+    private readonly IOrderHistoryStore _orderHistoryStore;
     private readonly ILogger<OrderStatusHub> _logger;
 
-    public OrderStatusHub(ILogger<OrderStatusHub> logger)
+    public OrderStatusHub(ILogger<OrderStatusHub> logger, IOrderHistoryStore orderHistoryStore)
     {
         _logger = logger;
+        _orderHistoryStore = orderHistoryStore;
     }
 
     public async Task SubscribeToOrders()
@@ -18,31 +20,20 @@ public class OrderStatusHub : Hub
 
     public async Task PublishOrderStatusEvent(OrderStatusEvent evt)
     {
-        if (!_orderHistory.ContainsKey(evt.OrderId))
-        {
-            _orderHistory[evt.OrderId] = new List<OrderStatusEvent>();
-        }
-        
-        _orderHistory[evt.OrderId].Add(evt);
-        
+        await _orderHistoryStore.AddEventAsync(evt);
         _logger.LogDebug("📻 Publishing order event: WorkflowEventType={WorkflowEventType} OrderEventType={OrderEventType} for Order {OrderId} Agent {AgentName}", 
             evt.WorkflowEventType, evt.OrderEventType, evt.OrderId, evt.AgentName);
-        
         await Clients.Group("OrderUpdates").SendAsync("OrderStatusUpdate", evt);
     }
 
-    public Task<List<OrderStatusEvent>> GetOrderHistory(string orderId)
+    public async Task<List<OrderStatusEvent>> GetOrderHistory(string orderId)
     {
-        return Task.FromResult(_orderHistory.GetValueOrDefault(orderId) ?? new List<OrderStatusEvent>());
+        return await _orderHistoryStore.GetOrderHistoryAsync(orderId);
     }
 
-    public Task<Dictionary<string, int>> GetOrderStats()
+    public async Task<Dictionary<string, int>> GetOrderStats()
     {
-        return Task.FromResult(new Dictionary<string, int>
-        {
-            ["TotalOrders"] = _orderHistory.Count,
-            ["TotalEvents"] = _orderHistory.Values.Sum(events => events.Count)
-        });
+        return await _orderHistoryStore.GetOrderStatsAsync();
     }
 
     public override async Task OnConnectedAsync()
