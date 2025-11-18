@@ -21,7 +21,7 @@ public class FryerTools(ILogger<FryerTools> logger) : BaseTool(logger)
     {
         return request.addSalt
             ? LogAndReturn("🧂 Adding salt to fries... Perfectly seasoned fries ready!")
-            : LogAndReturn($"");
+            : LogAndReturn("No salt added to fries.");
     }
 
     [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for deliverty.")]

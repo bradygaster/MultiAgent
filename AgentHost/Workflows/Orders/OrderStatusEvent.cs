@@ -1,6 +1,6 @@
 ﻿public class OrderStatusEvent : WorkflowStatusEvent
 {
-    public string OrderId { get; set; }
+    public required string OrderId { get; set; }
     public OrderEventType OrderEventType { get; set; }
 }
 

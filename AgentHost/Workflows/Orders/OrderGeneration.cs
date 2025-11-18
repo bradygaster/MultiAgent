@@ -3,9 +3,7 @@
     Task<string> GenerateRandomOrder();
 }
 
-public class StaticOrderGenerator(
-    ILogger<StaticOrderGenerator> logger,
-    BaseEventPublisher eventPublisher) : IOrderGenerator
+public class StaticOrderGenerator : IOrderGenerator
 {
     public async Task<string> GenerateRandomOrder()
     {
