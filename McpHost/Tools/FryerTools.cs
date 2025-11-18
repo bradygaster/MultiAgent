@@ -24,7 +24,7 @@ public class FryerTools(ILogger<FryerTools> logger) : BaseTool(logger)
             : LogAndReturn("No salt added to fries.");
     }
 
-    [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for deliverty.")]
+    [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for delivery.")]
     public string BagFriesForOrder() => LogAndReturn($"🍟 Bagging up order of fries ... Fries ready!");
 }
 
