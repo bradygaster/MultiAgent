@@ -1,9 +1,9 @@
 ﻿public class AgentMetadata
 {
-    public string Id { get; set; } = "agendit";
-    public string Name { get; set; } = "Custom AI Agent";
-    public string Domain { get; set; } = "the specified domain";
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Domain { get; set; } = string.Empty;
     public string[] Tools { get; set; } = Array.Empty<string>();
-    public string Emoji { get; set; } = "🤖";
-    public string Color { get; set; } = "#94a3b8";
+    public string Emoji { get; set; } = Static.DefaultAgentEmoji;
+    public string Color { get; set; } = Static.DefaultAgentColor;
 }
