@@ -2,8 +2,15 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class ExpoTools(ILogger<ExpoTools> logger) : BaseTool(logger)
+public class ExpoTools(ILogger<ExpoTools> logger)
 {
+    private string LogAndReturn(string message)
+    {
+        Task.Delay(CentralStatics.DefaultTimeout).Wait(); // Simulate a delay
+        logger.LogInformation(message);
+        return message;
+    }
+
     [McpServerTool(Name = "plate_meal"), Description("Plate a meal with proper presentation.")]
     public string PlateMeal(PlateMealRequest request) => LogAndReturn($"🍽️ Plating meal for {request.Items} with {request.Accessories}... Meal beautifully presented!");
 

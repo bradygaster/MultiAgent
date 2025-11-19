@@ -13,7 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\McpHost\McpHost.csproj" />
+    <ProjectReference Include="..\DessertTools\DessertTools.csproj" />
+    <ProjectReference Include="..\ExpoTools\ExpoTools.csproj" />
+    <ProjectReference Include="..\FryerTools\FryerTools.csproj" />
+    <ProjectReference Include="..\GrillTools\GrillTools.csproj" />
     <ProjectReference Include="..\AgentHost\AgentHost.csproj" />
   </ItemGroup>
 

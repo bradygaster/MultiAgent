@@ -2,8 +2,15 @@
 using System.ComponentModel;
 
 [McpServerToolType]
-public class FryerTools(ILogger<FryerTools> logger) : BaseTool(logger)
+public class FryerTools(ILogger<FryerTools> logger)
 {
+    private string LogAndReturn(string message)
+    {
+        Task.Delay(CentralStatics.DefaultTimeout).Wait(); // Simulate a delay
+        logger.LogInformation(message);
+        return message;
+    }
+
     [McpServerTool(Name = "fry_fries"), Description("Fry standard French fries.")]
     public string FryStandard(FryStandardRequest request) => LogAndReturn($"🍟 Frying {request.Portion} portion of standard fries for {request.Duration} minutes... Crispy golden fries ready!");
 
@@ -21,10 +28,10 @@ public class FryerTools(ILogger<FryerTools> logger) : BaseTool(logger)
     {
         return request.addSalt
             ? LogAndReturn("🧂 Adding salt to fries... Perfectly seasoned fries ready!")
-            : LogAndReturn($"");
+            : LogAndReturn("No salt added to fries.");
     }
 
-    [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for deliverty.")]
+    [McpServerTool(Name = "bag_fries_for_order"), Description("Bag an order of fries to prep them for delivery.")]
     public string BagFriesForOrder() => LogAndReturn($"🍟 Bagging up order of fries ... Fries ready!");
 }
 
