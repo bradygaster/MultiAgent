@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-public class OrderStatusHub : Hub
+public class DashboardHub : Hub
 {
     // NOTE: Order history storage is now abstracted for flexibility and testability.
     private readonly IOrderHistoryStore _orderHistoryStore;
-    private readonly ILogger<OrderStatusHub> _logger;
+    private readonly ILogger<DashboardHub> _logger;
 
-    public OrderStatusHub(ILogger<OrderStatusHub> logger, IOrderHistoryStore orderHistoryStore)
+    public DashboardHub(ILogger<DashboardHub> logger, IOrderHistoryStore orderHistoryStore)
     {
         _logger = logger;
         _orderHistoryStore = orderHistoryStore;

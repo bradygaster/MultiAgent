@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="AgentHost/AgentHost.csproj" />
   <Project Path="AppHost/AppHost.csproj" />
   <Project Path="DessertTools/DessertTools.csproj" />

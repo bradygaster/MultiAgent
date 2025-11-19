@@ -25,7 +25,7 @@ builder.AddServices();
 var host = builder.Build();
 host.UseCors();
 host.MapDefaultEndpoints();
-host.MapHub<OrderStatusHub>("/orderstatus");
+host.MapHub<DashboardHub>("/orderstatus");
 host.MapGet("/", () => "MultiAgent Status Hub - SignalR endpoint at /orderstatus");
 
 host.Run();
