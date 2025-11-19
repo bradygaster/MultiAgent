@@ -6,6 +6,7 @@ public class GrillTools(ILogger<GrillTools> logger)
 {
     private string LogAndReturn(string message)
     {
+        Task.Delay(CentralStatics.DefaultTimeout).Wait(); // Simulate a delay
         logger.LogInformation(message);
         return message;
     }
