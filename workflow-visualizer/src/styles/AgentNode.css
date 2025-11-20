@@ -1,3 +1,10 @@
+.tool-label {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 2px;
+}
 /* AgentNode styles */
 
 .node-container.node-container--agent {
@@ -61,23 +68,39 @@
   flex-direction: column;
   gap: 6px;
 }
+.tool-header {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
 .tool-item {
   padding: 10px;
   border-radius: 8px;
-  font-size: 12px;
-  border-left: 4px solid #e5e7eb;
+  font-size: 13px;
+  border: 2px solid #e5e7eb;
   transition: all 0.2s ease;
   position: relative;
 }
+.tool-item .tool-name {
+  font-weight: 700;
+  color: #1a202c;
+  font-family: monospace;
+  font-size: 13px;
+}
 .tool-item--recent {
-  background: rgba(220,38,38,0.08); /* fallback red, can be set via JS for agent color */
-  border-left: 4px solid var(--agent-color, #888);
-  box-shadow: 0 0 8px 2px var(--agent-color, #888)33;
-  border: 1.5px solid var(--agent-color, #888)33;
+  background: var(--agent-color, #888)18;
+  color: #222;
+  border-radius: 8px;
+  border: 2px solid var(--agent-color, #888);
+  box-shadow: 0 1px 4px 0 var(--agent-color, #888)11;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .tool-item--called {
   background: #f3f4f6;
-  border-left: 4px solid #9ca3af;
+  border-radius: 8px;
+  border: 2px solid #9ca3af;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .tool-count-badge {

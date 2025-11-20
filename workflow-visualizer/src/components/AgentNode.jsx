@@ -93,7 +93,7 @@ const AgentNode = ({ data }) => {
 
       {expanded && (
         <div style={{ borderTop: `2px solid ${data.color}20`, paddingTop: '12px', marginTop: '12px' }}>
-          <div className="flex gap-6 mb-8" style={{ fontSize: '14px', fontWeight: 'bold', color: data.color, alignItems: 'center' }}>
+          <div className="tool-header flex gap-6 mb-8" style={{ color: data.color, alignItems: 'center' }}>
             <span>🛠️</span>
             Available Tools ({data.tools.length})
           </div>
@@ -106,7 +106,7 @@ const AgentNode = ({ data }) => {
               else if (callCount > 0) toolClass += ' tool-item--called';
               return (
                 <div key={idx} className={toolClass}>
-                  <div style={{ fontWeight: 'bold', color: isRecentlyCalled ? data.color : '#1f2937', fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
+                  <div className="tool-label" style={{ color: isRecentlyCalled ? data.color : undefined, display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
                     <div className="flex gap-6" style={{ alignItems: 'center' }}>
                       {isRecentlyCalled && (
                         <span className="pulse" style={{ fontSize: '14px' }}>⚡</span>
