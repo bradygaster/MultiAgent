@@ -1,0 +1,14 @@
+/* Utility classes for spacing, flex, text, etc. */
+.m-0 { margin: 0; }
+.mb-8 { margin-bottom: 8px; }
+.mt-12 { margin-top: 12px; }
+.p-4 { padding: 4px; }
+.px-8 { padding-left: 8px; padding-right: 8px; }
+.py-4 { padding-top: 4px; padding-bottom: 4px; }
+.flex { display: flex; }
+.flex-row { flex-direction: row; }
+.flex-col { flex-direction: column; }
+.gap-6 { gap: 6px; }
+.text-center { text-align: center; }
+.overflow-auto { overflow-y: auto; }
+.max-h-400 { max-height: 400px; }

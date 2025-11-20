@@ -1,0 +1,107 @@
+/* AgentNode styles */
+
+.node-container.node-container--agent {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  min-width: 300px;
+  max-width: 400px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.node-container--active {
+  box-shadow:
+    0 0 0 4px var(--agent-color, #888)22,
+    0 0 16px 2px var(--agent-color, #888)44,
+    0 10px 15px -3px rgba(0,0,0,0.08);
+  transform: scale(1.04);
+}
+.node-container--inactive {
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  transform: scale(1);
+}
+.node-handle {
+  background: var(--agent-color, #888);
+}
+.node-emoji {
+  font-size: 32px;
+}
+.node-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.node-domain {
+  padding: 8px 12px;
+  background: var(--agent-color, #888)15;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+.node-order.node-order--active {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: var(--agent-color, #888)25;
+  border-radius: 6px;
+  border: 1px solid var(--agent-color, #888)50;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--agent-color, #888);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tool-item {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  border-left: 4px solid #e5e7eb;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.tool-item--recent {
+  background: rgba(220,38,38,0.08); /* fallback red, can be set via JS for agent color */
+  border-left: 4px solid var(--agent-color, #888);
+  box-shadow: 0 0 8px 2px var(--agent-color, #888)33;
+  border: 1.5px solid var(--agent-color, #888)33;
+}
+.tool-item--called {
+  background: #f3f4f6;
+  border-left: 4px solid #9ca3af;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.tool-count-badge {
+  background: #6b7280;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+.pulse {
+  animation: pulse 0.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+.shimmer {
+  animation: shimmer 1s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -100px; }
+  100% { background-position: 100px; }
+}

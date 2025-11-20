@@ -12,7 +12,7 @@ import 'reactflow/dist/style.css';
 import AgentNode from './components/AgentNode';
 import OutputNode from './components/OutputNode';
 import { useOrderStatus } from './hooks/useOrderStatus';
-import './App.css';
+import './styles/index.css';
 
 const nodeTypes = {
   agentNode: AgentNode,
@@ -275,28 +275,22 @@ function App() {
   }, [activeOrders, orderEvents, setNodes, globalToolCounts]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div className="app-container">
       {/* Connection Status Indicator */}
-      <div style={{
+      <div className={`panel panel--status flex gap-8`} style={{
         position: 'absolute',
         top: 10,
         right: 10,
         zIndex: 1001,
-        padding: '8px 16px',
         background: isConnected ? '#10b981' : '#ef4444',
         color: 'white',
-        borderRadius: '8px',
-        fontSize: '14px',
         fontWeight: 'bold',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
       }}>
-        <span style={{ 
-          width: '8px', 
-          height: '8px', 
-          borderRadius: '50%', 
+        <span style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
           background: 'white',
           animation: isConnected ? 'pulse 2s infinite' : 'none'
         }} />
@@ -304,69 +298,43 @@ function App() {
       </div>
 
       {/* Info Panel */}
-      <div style={{
+      <div className="panel panel--info" style={{
         position: 'absolute',
         top: 20,
         right: 20,
-        zIndex: 1000,
-        background: 'white',
-        padding: '20px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        maxWidth: '350px'
+        zIndex: 1000
       }}>
-        <h1 style={{ margin: 0, fontSize: '24px', color: '#1f2937', marginBottom: '8px' }}>
-          🏪 MultiAgent Restaurant Workflow
-        </h1>
-        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '12px' }}>
+        <h1 className="heading-lg">🏪 MultiAgent Restaurant Workflow</h1>
+        <p className="text-muted" style={{ fontSize: '14px', lineHeight: '1.5', marginBottom: '12px' }}>
           This diagram visualizes the sequential agent workflow for processing restaurant orders in real-time.
           Watch as orders flow through each station!
         </p>
         <div style={{ marginTop: '12px', padding: '10px', background: '#f3f4f6', borderRadius: '8px' }}>
           <strong style={{ fontSize: '12px', color: '#374151' }}>Live Stats:</strong>
-          <div style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#6b7280' }}>
+          <div className="text-muted" style={{ margin: '8px 0 0 0', fontSize: '12px' }}>
             <div>🔴 Active Orders: <strong>{Object.values(activeOrders).filter(o => !o.isComplete).length}</strong></div>
             <div>✅ Completed: <strong>{Object.values(activeOrders).filter(o => o.isComplete).length}</strong></div>
             <div>📊 Total Events: <strong>{orderEvents.length}</strong></div>
           </div>
         </div>
-        
         {/* Recent Orders Section */}
         <div style={{ marginTop: '16px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '12px' 
-          }}>
+          <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
               Recent Orders ({Object.keys(activeOrders).length})
             </h3>
             {Object.values(activeOrders).some(o => o.isComplete) && (
               <button
                 onClick={clearCompletedOrders}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '10px',
-                  background: '#ef4444',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="btn btn-danger btn-small"
               >
                 Clear
               </button>
             )}
           </div>
-          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="overflow-auto max-h-400">
             {Object.keys(activeOrders).length === 0 && (
-              <div style={{ 
-                textAlign: 'center', 
-                color: '#9ca3af', 
-                padding: '20px',
-                fontSize: '13px'
-              }}>
+              <div className="text-center" style={{ color: '#9ca3af', padding: '20px', fontSize: '13px' }}>
                 Waiting for orders...
               </div>
             )}
@@ -375,82 +343,33 @@ function App() {
               .map(([orderId, order]) => {
                 const firstEvent = order.events.find(e => e.workflowEventType === 1); // WorkflowStarted = 1
                 const orderMessage = firstEvent?.message || 'Order in progress';
-                
+                const cardClass = order.isComplete ? 'order-card order-card--complete' : 'order-card order-card--active';
                 return (
-                  <div key={orderId} style={{
-                    padding: '12px',
-                    marginBottom: '8px',
-                    background: order.isComplete ? '#f0fdf4' : '#fffbeb',
-                    border: `2px solid ${order.isComplete ? '#10b981' : '#f59e0b'}`,
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-                  }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: '6px'
-                    }}>
+                  <div key={orderId} className={cardClass}>
+                    <div className="order-card__header">
                       <div style={{ flex: 1 }}>
-                        <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold',
-                          color: '#1f2937',
-                          marginBottom: '3px',
-                          fontFamily: 'monospace'
-                        }}>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#1f2937', marginBottom: '3px', fontFamily: 'monospace' }}>
                           #{orderId}
                         </div>
-                        <div style={{ 
-                          fontSize: '10px', 
-                          color: '#6b7280',
-                          lineHeight: '1.3',
-                          marginBottom: '6px'
-                        }}>
+                        <div className="order-card__body">
                           {orderMessage.length > 50 
                             ? orderMessage.substring(0, 50) + '...' 
                             : orderMessage}
                         </div>
                       </div>
                       {order.isComplete && (
-                        <span style={{ 
-                          color: '#10b981', 
-                          fontSize: '16px',
-                          marginLeft: '6px',
-                          flexShrink: 0
-                        }}>✓</span>
+                        <span style={{ color: '#10b981', fontSize: '16px', marginLeft: '6px', flexShrink: 0 }}>✓</span>
                       )}
                     </div>
-                    
-                    <div style={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '4px 8px',
-                      background: order.isComplete ? '#dcfce7' : '#fef9c3',
-                      borderRadius: '4px',
-                      marginBottom: '6px'
-                    }}>
+                    <div className="flex gap-6" style={{ padding: '4px 8px', background: order.isComplete ? '#dcfce7' : '#fef9c3', borderRadius: '4px', marginBottom: '6px', alignItems: 'center' }}>
                       <span style={{ fontSize: '12px' }}>
                         {order.isComplete ? '🍽️' : '🔄'}
                       </span>
-                      <span style={{ 
-                        fontSize: '11px', 
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <span style={{ fontSize: '11px', fontWeight: '600', color: '#374151' }}>
                         {order.isComplete ? 'Complete' : order.currentAgentName}
                       </span>
                     </div>
-                    
-                    <div style={{ 
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '9px',
-                      color: '#9ca3af'
-                    }}>
+                    <div className="order-card__footer">
                       <span>{new Date(order.lastUpdate).toLocaleTimeString()}</span>
                       <span>{order.events.length} event{order.events.length !== 1 ? 's' : ''}</span>
                     </div>

@@ -3,25 +3,14 @@ import { Handle, Position } from 'reactflow';
 
 const OutputNode = ({ data }) => {
   return (
-    <div
-      style={{
-        background: '#22c55e',
-        color: 'white',
-        border: '2px solid #16a34a',
-        borderRadius: '12px',
-        padding: '20px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        minWidth: '200px',
-      }}
-    >
+    <div className="node-container node-container--output">
       {/* Multiple handles allow connections from any direction */}
-      <Handle type="target" position={Position.Top} style={{ background: '#16a34a' }} />
-      <Handle type="target" position={Position.Bottom} style={{ background: '#16a34a' }} />
-      <Handle type="target" position={Position.Left} style={{ background: '#16a34a' }} />
-      <Handle type="target" position={Position.Right} style={{ background: '#16a34a' }} />
+      <Handle type="target" position={Position.Top} className="node-handle" />
+      <Handle type="target" position={Position.Bottom} className="node-handle" />
+      <Handle type="target" position={Position.Left} className="node-handle" />
+      <Handle type="target" position={Position.Right} className="node-handle" />
       
-      <div style={{ textAlign: 'center' }}>
+      <div className="node-label text-center">
         {data.label}
       </div>
     </div>

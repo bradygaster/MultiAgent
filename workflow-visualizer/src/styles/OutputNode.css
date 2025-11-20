@@ -1,0 +1,18 @@
+/* OutputNode styles */
+
+.node-container.node-container--output {
+  background: #22c55e;
+  color: white;
+  border: 2px solid #16a34a;
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 200px;
+}
+.node-handle {
+  background: #16a34a;
+}
+.node-label {
+  text-align: center;
+}
