@@ -1,0 +1,34 @@
+/* Theme overrides & semantic accent definitions */
+
+:root, .theme-light {
+  --accent-warn-bg: #fef9c3;
+  --accent-warn-border: #f59e0b;
+  --accent-warn-fg: #92400e;
+  --accent-success-bg: #dcfce7;
+  --accent-success-border: #10b981;
+  --accent-success-fg: #065f46;
+}
+.theme-dark {
+  --accent-warn-bg: #2f3c4e; /* toned down warning */
+  --accent-warn-border: #f59e0b66;
+  --accent-warn-fg: #fbbf24;
+  --accent-success-bg: #123d33; /* subtle success */
+  --accent-success-border: #10b98188;
+  --accent-success-fg: #34d399;
+}
+
+/* Base card & status refactors to use semantic accents */
+.order-card--active { background: var(--accent-warn-bg); border-color: var(--accent-warn-border); }
+.order-card--complete { background: var(--accent-success-bg); border-color: var(--accent-success-border); }
+.order-card__status--active { background: var(--accent-warn-bg); color: var(--accent-warn-fg); }
+.order-card__status--complete { background: var(--accent-success-bg); color: var(--accent-success-fg); }
+
+/* Dark mode specific readability tweaks */
+.theme-dark .order-card--active { background: var(--color-surface); }
+.theme-dark .order-card--complete { background: var(--color-surface); }
+.theme-dark .order-card__status--active { background: var(--accent-warn-bg); color: var(--accent-warn-fg); }
+.theme-dark .order-card__status--complete { background: var(--accent-success-bg); color: var(--accent-success-fg); }
+.theme-dark .order-card__id { color: var(--color-text-strong); }
+.theme-dark .order-card__status-label { color: var(--color-text-strong); }
+.theme-dark .order-card__footer { color: #64748b; }
+.theme-dark .recent-orders-panel__empty { color: #64748b; }

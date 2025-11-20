@@ -58,6 +58,9 @@
   font-weight: 600;
   color: #1a202c;
   margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 /* AgentNode styles */
 

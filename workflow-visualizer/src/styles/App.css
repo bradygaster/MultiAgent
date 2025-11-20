@@ -181,6 +181,113 @@
   height: 100vh;
 }
 
+/* Toolbar Styles */
+.app-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  display: flex;
+  align-items: center;
+  z-index: 1200;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--toolbar-bg);
+}
+.app-toolbar__inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-family: inherit;
+}
+.app-toolbar__brand { display: flex; gap: 12px; align-items: center; font-weight: 600; }
+.app-toolbar__logo { font-size: 24px; }
+.app-toolbar__title { font-size: 16px; letter-spacing: .5px; color: var(--color-text-strong); }
+.theme-toggle-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--btn-border);
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .25s, color .25s, border-color .25s, box-shadow .25s;
+}
+.theme-toggle-btn:hover { background: var(--btn-bg-hover); box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+.theme-toggle-btn:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Light/Dark Theme Variables */
+:root, .theme-light {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f3f4f6;
+  --color-text: #4b5563;
+  --color-text-strong: #1f2937;
+  --color-border: #e5e7eb;
+  --focus-ring: #6366f1;
+  --toolbar-bg: rgba(255,255,255,0.85);
+  --btn-bg: #ffffff;
+  --btn-bg-hover: #f1f5f9;
+  --btn-border: #e2e8f0;
+  --btn-text: #334155;
+}
+.theme-dark {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-alt: #24324a;
+  --color-text: #94a3b8;
+  --color-text-strong: #f1f5f9;
+  --color-border: #334155;
+  --focus-ring: #7dd3fc;
+  --toolbar-bg: rgba(30,41,59,0.85);
+  --btn-bg: #1e293b;
+  --btn-bg-hover: #334155;
+  --btn-border: #334155;
+  --btn-text: #e2e8f0;
+}
+body.theme-dark, .theme-dark body { background: var(--color-bg); color: var(--color-text); }
+body.theme-light, .theme-light body { background: var(--color-bg); color: var(--color-text); }
+
+/* Dark Mode Overrides */
+.theme-dark .panel { background: var(--color-surface); color: var(--color-text); box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.theme-dark .heading-lg { color: var(--color-text-strong); }
+.theme-dark .text-muted { color: var(--color-text); }
+.theme-dark .info-panel__stats { background: var(--color-surface-alt); }
+.theme-dark .order-card--active { background: #1e293b; border-color: #f59e0b66; }
+.theme-dark .order-card--complete { background: #1e3a34; border-color: #10b98188; }
+.theme-dark .order-card__body { color: var(--color-text); }
+.theme-dark .order-card__id { color: var(--color-text-strong); }
+.theme-dark .order-card__status-label { color: var(--color-text-strong); }
+.theme-dark .order-card__footer { color: #64748b; }
+.theme-dark .recent-orders-panel__empty { color: #64748b; }
+.theme-dark .info-panel__stats-title { color: var(--color-text-strong); }
+.theme-dark .info-panel__stats-list div { color: var(--color-text); }
+.theme-dark .order-modal { background: var(--color-surface); color: var(--color-text); }
+.theme-dark .order-modal__content { background: var(--color-surface-alt); color: var(--color-text); }
+.theme-dark .theme-toggle-btn { box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+.theme-dark .node-container.node-container--agent { background: var(--color-surface); }
+.theme-dark .node-title { color: var(--color-text-strong); }
+.theme-dark .node-domain { color: var(--color-text); }
+.theme-dark .tool-item { background: var(--color-surface-alt); border-color: var(--color-border); }
+.theme-dark .tool-item--called { background: var(--color-surface-alt); border-color: #64748b; }
+.theme-dark .tool-item--recent { background: var(--color-surface-alt); }
+.theme-dark .tool-desc { color: var(--color-text); }
+.theme-dark .tool-label { color: var(--color-text-strong); }
+
+/* Ensure top panels sit below toolbar visually */
+.panel--status { margin-top: 60px; }
+.panel--info { margin-top: 80px; }
+
 .panel {
   background: white;
   border-radius: 12px;

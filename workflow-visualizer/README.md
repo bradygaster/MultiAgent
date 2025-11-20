@@ -35,6 +35,22 @@ npm run dev
 
 The application will be available at http://localhost:3000
 
+## Theme Toggle (Dark / Light Mode)
+
+A global toolbar has been added at the top of the application with a Dark/Light mode toggle.
+
+- Your preference is saved in `localStorage` under the key `theme`.
+- The toggle is accessible (uses `aria-pressed` and clear labels).
+- Dark mode applies a cohesive palette across panels, nodes, modals, and tool lists.
+
+If you need to reset the theme, open DevTools and run:
+
+```js
+localStorage.removeItem('theme'); location.reload();
+```
+
+You can further customize colors by editing the CSS variables in `src/styles/App.css` under the `:root` / `.theme-dark` sections.
+
 ## Build for Production
 
 ```bash

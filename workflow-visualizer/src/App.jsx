@@ -13,6 +13,7 @@ import AgentNode from './components/AgentNode';
 import OutputNode from './components/OutputNode';
 import { useOrderStatus } from './hooks/useOrderStatus';
 import './styles/index.css';
+import ThemeToolbar from './components/ThemeToolbar';
 
 const nodeTypes = {
   agentNode: AgentNode,
@@ -288,6 +289,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <ThemeToolbar />
       {/* Connection Status Indicator */}
       <div className={`panel panel--status flex gap-8 ${isConnected ? 'status--live' : 'status--disconnected'}`}>
         <span className={`status-indicator ${isConnected ? 'pulse' : ''}`} />
