@@ -10,8 +10,8 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
     {
         var evt = new TEvent
         {
-            AgentId = "system",
-            AgentName = "System",
+            AgentId = Static.SystemAgentId,
+            AgentName = Static.SystemAgentName,
             WorkflowEventType = WorkflowEventType.WorkflowStarted,
             Message = userInput,
             Timestamp = DateTime.UtcNow,
@@ -57,8 +57,8 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
     {
         var evt = new TEvent
         {
-            AgentId = "system",
-            AgentName = "System",
+            AgentId = Static.SystemAgentId,
+            AgentName = Static.SystemAgentName,
             WorkflowEventType = WorkflowEventType.WorkflowEnded,
             Message = $"{workflowName} completed successfully",
             Timestamp = DateTime.UtcNow,
