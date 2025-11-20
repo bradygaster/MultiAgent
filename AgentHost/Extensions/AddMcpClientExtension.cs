@@ -40,7 +40,7 @@ public static class AddMcpClientExtension
             using var mcpClient = McpClient.CreateAsync(
                     new HttpClientTransport(new()
                     {
-                        Endpoint = new Uri(endpoint),
+                        Endpoint = new Uri(endpoint!),
                     }), mcpClientOptions, loggerFactory);
 
             var result = mcpClient.ConfigureAwait(false).GetAwaiter().GetResult();

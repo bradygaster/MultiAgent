@@ -28,7 +28,7 @@ public class StaticOrderGenerator : IOrderGenerator
 public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
     IOrderGenerator orderGenerator,
     OrderWorkflowDefinition orderWorkflowDefinition,
-    ConversationLoop conversation) : BackgroundService
+    WorkflowFactory conversation) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

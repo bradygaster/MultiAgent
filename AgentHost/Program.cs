@@ -23,9 +23,13 @@ builder.AddSettings();
 builder.AddServices();
 
 var host = builder.Build();
+
 host.UseCors();
 host.MapDefaultEndpoints();
 host.MapHub<DashboardHub>("/orderstatus");
 host.MapGet("/", () => "MultiAgent Status Hub - SignalR endpoint at /orderstatus");
+
+// Make sure the agents are registered before starting the host
+await host.Services.GetService<IAgentRegistry>()!.RegisterAllAgentsAsync();
 
 host.Run();

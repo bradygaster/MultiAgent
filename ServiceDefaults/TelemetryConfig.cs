@@ -2,7 +2,7 @@
 
 public static class TelemetryConfig
 {
-    public static readonly string WorkflowSourceName = "Workflows";
+    public static readonly string ApplicationTelemetrySourceName = "MutiAgent";
 
-    public static ActivitySource WorkflowActivitySource = new ActivitySource(WorkflowSourceName);
+    public static ActivitySource ApplicationTelemetrySource = new ActivitySource(ApplicationTelemetrySourceName);
 }

@@ -4,14 +4,14 @@ using System.Text;
 using System.Text.Json;
 using System.Diagnostics;
 
-public class ConversationLoop(ILogger<ConversationLoop> logger, WorkflowEventPublisher eventPublisher)
+public class WorkflowFactory(ILogger<WorkflowFactory> logger, WorkflowEventPublisher eventPublisher)
 {
     public async Task<List<ChatMessage>> ExecuteWorkflowAsync<TEvent>(
         IWorkflowDefinition workflowDefinition,
         string userInput) where TEvent : WorkflowStatusEvent, new()
     {
         var workflowId = workflowDefinition.GenerateWorkflowInstanceId();
-        using (var session = TelemetryConfig.WorkflowActivitySource.StartActivity($"Workflow #{workflowId}", ActivityKind.Server))
+        using (var session = TelemetryConfig.ApplicationTelemetrySource.StartActivity($"Workflow #{workflowId}", ActivityKind.Server))
         {
             session?.Start();
             await eventPublisher.PublishWorkflowStartedEventAsync<TEvent>(workflowDefinition, userInput, workflowId);
