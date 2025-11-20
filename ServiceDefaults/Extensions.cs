@@ -65,7 +65,7 @@ public static class Extensions
             {
                 tracing.AddSource("*");
                 tracing
-                    .AddSource(TelemetryConfig.OrderWorkflowSourceName)
+                    .AddSource(TelemetryConfig.WorkflowSourceName)
                     .AddSource(builder.Environment.ApplicationName)
                     .AddAspNetCoreInstrumentation(tracing =>
                         // Exclude health check requests from tracing

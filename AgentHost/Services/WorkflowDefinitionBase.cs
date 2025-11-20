@@ -8,7 +8,7 @@ public abstract class WorkflowDefinitionBase : IWorkflowDefinition
 
     public abstract string Description { get; }
 
-    public abstract Workflow BuildWorkflow(AgentPool agentPool);
+    public abstract Workflow BuildWorkflow();
 
     public virtual void EnrichEvent(WorkflowStatusEvent evt, WorkflowEventType eventType)
     {

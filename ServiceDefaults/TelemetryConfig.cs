@@ -2,7 +2,7 @@
 
 public static class TelemetryConfig
 {
-    public static readonly string OrderWorkflowSourceName = "OrderWorkflow";
+    public static readonly string WorkflowSourceName = "Workflows";
 
-    public static ActivitySource OrderWorkflowActivitySource = new ActivitySource(OrderWorkflowSourceName);
+    public static ActivitySource WorkflowActivitySource = new ActivitySource(WorkflowSourceName);
 }

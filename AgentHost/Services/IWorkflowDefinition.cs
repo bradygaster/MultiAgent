@@ -11,7 +11,7 @@ public interface IWorkflowDefinition
 
     void EnrichEvent(WorkflowStatusEvent evt, WorkflowEventType eventType);
 
-    Workflow BuildWorkflow(AgentPool agentPool);
+    Workflow BuildWorkflow();
     
     ChatMessage BuildInitialMessage(string userInput);
 }

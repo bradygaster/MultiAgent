@@ -35,11 +35,11 @@ public class OrderSimulatingWorker(ILogger<OrderSimulatingWorker> logger,
         while (!stoppingToken.IsCancellationRequested)
         {
             var randomOrder = await orderGenerator.GenerateRandomOrder();
-            await conversation.ExecuteWorkflowAsync<WorkflowStatusEvent>(orderWorkflowDefinition, randomOrder);
+            _ = conversation.ExecuteWorkflowAsync<WorkflowStatusEvent>(orderWorkflowDefinition, randomOrder);
 
             // pause between orders
             logger.LogInformation("🕛 Waiting to simulate next order ...");
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
 }

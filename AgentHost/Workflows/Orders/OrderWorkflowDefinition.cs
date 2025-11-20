@@ -2,13 +2,13 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.Text;
 
-public class OrderWorkflowDefinition : WorkflowDefinitionBase
+public class OrderWorkflowDefinition(AgentPool agentPool) : WorkflowDefinitionBase
 {
     public override string Name => "OrderFulfillment";
     
     public override string Description => "Processes restaurant orders through grill, fryer, dessert, and plating stations";
 
-    public override Workflow BuildWorkflow(AgentPool agentPool)
+    public override Workflow BuildWorkflow()
     {
         return AgentWorkflowBuilder.BuildSequential(
             agentPool.GetAgent("grill")!,
