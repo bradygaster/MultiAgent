@@ -20,11 +20,4 @@ public class DashboardHub : Hub
         _logger.LogInformation("⛓️‍💥 Client disconnected: {ConnectionId}", Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
-
-    public async Task PublishOrderStatusEvent(WorkflowStatusEvent evt)
-    {
-        _logger.LogDebug("📻 Publishing order event: WorkflowEventType={WorkflowEventType} for Order {OrderId} Agent {AgentName}", 
-            evt.WorkflowEventType, evt.WorkflowId, evt.AgentName);
-        await Clients.All.SendAsync(evt.GetType().Name, evt);
-    }
 }
