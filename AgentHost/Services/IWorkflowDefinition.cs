@@ -6,12 +6,12 @@ public interface IWorkflowDefinition
     string Name { get; }
     
     string Description { get; }
-    
+
+    string GenerateWorkflowInstanceId();
+
+    void EnrichEvent(WorkflowStatusEvent evt, WorkflowEventType eventType);
+
     Workflow BuildWorkflow(AgentPool agentPool);
     
     ChatMessage BuildInitialMessage(string userInput);
-    
-    string GenerateWorkflowInstanceId();
-    
-    void EnrichEvent(WorkflowStatusEvent evt, WorkflowEventType eventType);
 }

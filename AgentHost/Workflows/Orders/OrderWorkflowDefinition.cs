@@ -27,4 +27,10 @@ public class OrderWorkflowDefinition : WorkflowDefinitionBase
 
         return new ChatMessage(ChatRole.User, preamble.ToString());
     }
+
+    public override string GenerateWorkflowInstanceId()
+    {
+        // eventually implement this with our own logic
+        return base.GenerateWorkflowInstanceId();
+    }
 }

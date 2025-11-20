@@ -3,7 +3,6 @@ using Azure.Identity;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 using OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
@@ -23,7 +22,7 @@ internal static class AddServicesExtension
         _ = builder.Services.AddSingleton<AgentPool>(services =>
         {
             var azureOptions = services.GetRequiredService<IOptions<AzureSettings>>().Value;
-            var appSettings = services.GetRequiredService<IOptions<MultiAgentSettings>>().Value;
+            var agentHostSettings = services.GetRequiredService<IOptions<AgentHostSettings>>().Value;
             var instructionLoader = services.GetRequiredService<InstructionLoader>();
 
             // Validate required Azure settings
@@ -55,11 +54,11 @@ internal static class AddServicesExtension
             // All the MCP Client tools available across all the servers
             var allMcpClientTools = new Dictionary<string, AITool>();
 
-            foreach (var mcpServer in appSettings.McpServers)
+            foreach (var mcpServer in agentHostSettings.McpServers)
             {
                 var mcpClient = services.GetKeyedService<McpClient>(mcpServer);
                 if (mcpClient == null)
-                    throw new InvalidOperationException("McpClient service not available.");
+                    throw new InvalidOperationException($"McpClient {mcpServer} not available.");
                 var tools = mcpClient.ListToolsAsync().GetAwaiter().GetResult();
                 foreach (var tool in tools)
                 {
@@ -82,7 +81,7 @@ internal static class AddServicesExtension
 
                 var agent = chatClient.CreateAIAgent(
                     name: instructionData.Metadata.Name,
-                    instructions: instructionData.Content,
+                    instructions: instructionData.Instructions,
                     tools: convertedTools
                 );
 

@@ -7,7 +7,7 @@ public static class AddSettingsExtension
         builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
         builder.Configuration.AddUserSecrets<Program>();
         builder.Services.Configure<AzureSettings>(builder.Configuration.GetSection("Azure"));
-        builder.Services.Configure<MultiAgentSettings>(builder.Configuration.GetSection("MultiAgent"));
+        builder.Services.Configure<AgentHostSettings>(builder.Configuration.GetSection("AgentHost"));
         return builder;
     }
 }

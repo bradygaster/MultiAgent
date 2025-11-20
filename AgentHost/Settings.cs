@@ -1,4 +1,4 @@
-public class MultiAgentSettings
+public class AgentHostSettings
 {
     public string InstructionsPath { get; set; } = "instructions";
     public List<string> McpServers { get; set; } = new List<string>();

@@ -6,9 +6,9 @@ public static class AddMcpClientExtension
 {
     public static IHostApplicationBuilder AddMcpClients(this IHostApplicationBuilder builder)
     {
-        var multiAgentSettings = builder.Configuration.GetSection("MultiAgent").Get<MultiAgentSettings>();
+        var agentHostSettings = builder.Configuration.GetSection(Static.ConfigurationSectionNameForAgentHost).Get<AgentHostSettings>();
 
-        foreach (var mcpServer in multiAgentSettings.McpServers)
+        foreach (var mcpServer in agentHostSettings!.McpServers)
         {
             builder = builder.AddMcpClient(mcpServer);
         }
@@ -23,7 +23,7 @@ public static class AddMcpClientExtension
         {
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var config = sp.GetRequiredService<IConfiguration>();
-            var multiAgentSettings = config.GetSection("MultiAgent").Get<MultiAgentSettings>();
+            var multiAgentSettings = config.GetSection(Static.ConfigurationSectionNameForAgentHost).Get<AgentHostSettings>();
 
             McpClientOptions mcpClientOptions = new()
             {

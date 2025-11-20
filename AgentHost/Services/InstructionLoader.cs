@@ -1,15 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using YamlDotNet.Serialization;
 
-public class InstructionData
+public class InstructionLoader(IOptions<AgentHostSettings> settings, ILogger<InstructionLoader> logger)
 {
-    public AgentMetadata Metadata { get; set; } = new();
-    public string Content { get; set; } = string.Empty;
-}
-
-public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<MultiAgentSettings> logger)
-{
-    public Dictionary<string, InstructionData> LoadAllInstructions()
+    public Dictionary<string, AgentKnowledge> LoadAllInstructions()
     {
         var basePath = AppContext.BaseDirectory;
 
@@ -18,7 +12,7 @@ public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<Mu
 
         var instructionFiles = Directory.GetFiles(instructionsPath, "*.md");
 
-        var instructions = new Dictionary<string, InstructionData>();
+        var instructions = new Dictionary<string, AgentKnowledge>();
         
         foreach (var file in instructionFiles)
         {
@@ -39,7 +33,7 @@ public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<Mu
         return instructions;
     }
     
-    public InstructionData LoadInstruction(string fileName)
+    public AgentKnowledge LoadInstruction(string fileName)
     {
         var basePath = AppContext.BaseDirectory;
         var instructionPath = Path.Combine(basePath, settings.Value.InstructionsPath, fileName);
@@ -53,10 +47,10 @@ public class InstructionLoader(IOptions<MultiAgentSettings> settings, ILogger<Mu
         // Parse front matter and content
         var (metadata, content) = ParseFrontMatter(instructionContent);
         
-        return new InstructionData
+        return new AgentKnowledge
         {
             Metadata = metadata,
-            Content = instructionContent
+            Instructions = instructionContent
         };
     }
     
