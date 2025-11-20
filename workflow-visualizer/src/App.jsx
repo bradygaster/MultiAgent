@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -182,6 +182,8 @@ const initialEdges = [
 ];
 
 function App() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { orderEvents, activeOrders, isConnected, clearCompletedOrders } = useOrderStatus();
@@ -274,53 +276,43 @@ function App() {
     );
   }, [activeOrders, orderEvents, setNodes, globalToolCounts]);
 
+  // Helper to get prompt and output for an order
+  const getOrderDetails = (order) => {
+    const promptEvent = order.events?.find(e => e.workflowEventType === 1); // WorkflowStarted = 1
+    const outputEvent = order.events?.find(e => e.workflowEventType === 6); // WorkflowCompleted = 6
+    return {
+      prompt: promptEvent?.message || '',
+      output: outputEvent?.message || ''
+    };
+  };
+
   return (
     <div className="app-container">
       {/* Connection Status Indicator */}
-      <div className={`panel panel--status flex gap-8`} style={{
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        zIndex: 1001,
-        background: isConnected ? '#10b981' : '#ef4444',
-        color: 'white',
-        fontWeight: 'bold',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <span style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          background: 'white',
-          animation: isConnected ? 'pulse 2s infinite' : 'none'
-        }} />
+      <div className={`panel panel--status flex gap-8 ${isConnected ? 'status--live' : 'status--disconnected'}`}>
+        <span className={`status-indicator ${isConnected ? 'pulse' : ''}`} />
         {isConnected ? 'Live' : 'Disconnected'}
       </div>
 
       {/* Info Panel */}
-      <div className="panel panel--info" style={{
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        zIndex: 1000
-      }}>
+      <div className="panel panel--info info-panel">
         <h1 className="heading-lg">🏪 MultiAgent Restaurant Workflow</h1>
-        <p className="text-muted" style={{ fontSize: '14px', lineHeight: '1.5', marginBottom: '12px' }}>
+        <p className="text-muted info-panel__desc">
           This diagram visualizes the sequential agent workflow for processing restaurant orders in real-time.
           Watch as orders flow through each station!
         </p>
-        <div style={{ marginTop: '12px', padding: '10px', background: '#f3f4f6', borderRadius: '8px' }}>
-          <strong style={{ fontSize: '12px', color: '#374151' }}>Live Stats:</strong>
-          <div className="text-muted" style={{ margin: '8px 0 0 0', fontSize: '12px' }}>
+        <div className="info-panel__stats">
+          <strong className="info-panel__stats-title">Live Stats:</strong>
+          <div className="text-muted info-panel__stats-list">
             <div>🔴 Active Orders: <strong>{Object.values(activeOrders).filter(o => !o.isComplete).length}</strong></div>
             <div>✅ Completed: <strong>{Object.values(activeOrders).filter(o => o.isComplete).length}</strong></div>
             <div>📊 Total Events: <strong>{orderEvents.length}</strong></div>
           </div>
         </div>
         {/* Recent Orders Section */}
-        <div style={{ marginTop: '16px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-          <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
+        <div className="recent-orders-panel">
+          <div className="flex recent-orders-panel__header">
+            <h3 className="recent-orders-panel__title">
               Recent Orders ({Object.keys(activeOrders).length})
             </h3>
             {Object.values(activeOrders).some(o => o.isComplete) && (
@@ -334,7 +326,7 @@ function App() {
           </div>
           <div className="overflow-auto max-h-400">
             {Object.keys(activeOrders).length === 0 && (
-              <div className="text-center" style={{ color: '#9ca3af', padding: '20px', fontSize: '13px' }}>
+              <div className="text-center recent-orders-panel__empty">
                 Waiting for orders...
               </div>
             )}
@@ -347,10 +339,8 @@ function App() {
                 return (
                   <div key={orderId} className={cardClass}>
                     <div className="order-card__header">
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#1f2937', marginBottom: '3px', fontFamily: 'monospace' }}>
-                          #{orderId}
-                        </div>
+                      <div className="order-card__header-main">
+                        <div className="order-card__id">#{orderId}</div>
                         <div className="order-card__body">
                           {orderMessage.length > 50 
                             ? orderMessage.substring(0, 50) + '...' 
@@ -358,21 +348,26 @@ function App() {
                         </div>
                       </div>
                       {order.isComplete && (
-                        <span style={{ color: '#10b981', fontSize: '16px', marginLeft: '6px', flexShrink: 0 }}>✓</span>
+                        <span className="order-card__complete-icon">✓</span>
                       )}
                     </div>
-                    <div className="flex gap-6" style={{ padding: '4px 8px', background: order.isComplete ? '#dcfce7' : '#fef9c3', borderRadius: '4px', marginBottom: '6px', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px' }}>
-                        {order.isComplete ? '🍽️' : '🔄'}
-                      </span>
-                      <span style={{ fontSize: '11px', fontWeight: '600', color: '#374151' }}>
-                        {order.isComplete ? 'Complete' : order.currentAgentName}
-                      </span>
+                    <div className={`order-card__status ${order.isComplete ? 'order-card__status--complete' : 'order-card__status--active'}`}> 
+                      <span className="order-card__status-emoji">{order.isComplete ? '🍽️' : '🔄'}</span>
+                      <span className="order-card__status-label">{order.isComplete ? 'Complete' : order.currentAgentName}</span>
                     </div>
                     <div className="order-card__footer">
                       <span>{new Date(order.lastUpdate).toLocaleTimeString()}</span>
                       <span>{order.events.length} event{order.events.length !== 1 ? 's' : ''}</span>
                     </div>
+                    {/* View Details button for completed orders */}
+                    {order.isComplete && (
+                      <button
+                        className="btn btn-small order-card__details-btn"
+                        onClick={() => { setSelectedOrder(order); setModalOpen(true); }}
+                      >
+                        View Details
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -382,6 +377,34 @@ function App() {
 
       {/* Active Orders Panel - REMOVED, now in left panel */}
       
+      {/* Modal for order details */}
+      {modalOpen && selectedOrder && (
+        <div className="order-modal__backdrop">
+          <div className="order-modal">
+            <button
+              onClick={() => setModalOpen(false)}
+              className="order-modal__close"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2 className="order-modal__title">Order Details</h2>
+            <div className="order-modal__section">
+              <strong>Prompt:</strong>
+              <div className="order-modal__content">
+                {getOrderDetails(selectedOrder).prompt || <span className="order-modal__none">(none)</span>}
+              </div>
+            </div>
+            <div className="order-modal__section">
+              <strong>Output:</strong>
+              <div className="order-modal__content">
+                {getOrderDetails(selectedOrder).output || <span className="order-modal__none">(none)</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ReactFlow
         nodes={nodes}
         edges={edges}

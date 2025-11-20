@@ -1,3 +1,179 @@
+/* Status Panel Styles */
+.status--live {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  background: #10b981;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.status--disconnected {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  background: #ef4444;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Info Panel Styles */
+.info-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+.info-panel__desc {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.info-panel__stats {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+.info-panel__stats-title {
+  font-size: 12px;
+  color: #374151;
+}
+.info-panel__stats-list {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+}
+
+/* Recent Orders Panel */
+.recent-orders-panel {
+  margin-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+}
+.recent-orders-panel__header {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.recent-orders-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+.recent-orders-panel__empty {
+  color: #9ca3af;
+  padding: 20px;
+  font-size: 13px;
+}
+
+/* Order Card Styles */
+.order-card__header-main {
+  flex: 1;
+}
+.order-card__id {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 3px;
+  font-family: monospace;
+}
+.order-card__complete-icon {
+  color: #10b981;
+  font-size: 16px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.order-card__status {
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.order-card__status--complete {
+  background: #dcfce7;
+}
+.order-card__status--active {
+  background: #fef9c3;
+}
+.order-card__status-emoji {
+  font-size: 12px;
+}
+.order-card__status-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+}
+.order-card__details-btn {
+  margin-top: 8px;
+  background: #e5e7eb;
+  color: #222;
+}
+
+/* Modal Styles */
+.order-modal__backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.order-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  min-width: 340px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+}
+.order-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #888;
+}
+.order-modal__title {
+  font-size: 20px;
+  margin-bottom: 18px;
+  color: #374151;
+}
+.order-modal__section {
+  margin-bottom: 16px;
+}
+.order-modal__content {
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #222;
+}
+.order-modal__none {
+  color: #aaa;
+}
 /* App-wide layout, panel, button, card, and utility styles */
 
 .app-container {

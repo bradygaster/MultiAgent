@@ -1,3 +1,57 @@
+/* Agent Header Styles */
+.agent-header {
+  margin-bottom: 12px;
+}
+.agent-header__row {
+  align-items: center;
+}
+.agent-header__main {
+  flex: 1;
+}
+.agent-header__id {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+.agent-tools-collapsed {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* Tool Section Styles */
+.tool-section {
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.tool-header {
+  align-items: center;
+}
+.tool-label__row {
+  align-items: center;
+}
+.tool-label--recent {
+  color: var(--agent-color);
+}
+.tool-label__pulse {
+  font-size: 14px;
+}
+.tool-count-badge--recent {
+  background: var(--agent-color);
+}
+.tool-desc {
+  color: #6b7280;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.tool-item__shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
 .tool-label {
   font-family: inherit;
   font-size: 14px;
