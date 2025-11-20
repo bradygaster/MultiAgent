@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-public class BaseEventPublisher(ILogger<BaseEventPublisher> logger,
+public class WorkflowEventPublisher(ILogger<WorkflowEventPublisher> logger,
         IHubContext<DashboardHub> dashboardHubContext)
 {
     protected internal async Task PublishEventAsync<TWorkflowStatusEvent>(TWorkflowStatusEvent e) where TWorkflowStatusEvent : WorkflowStatusEvent

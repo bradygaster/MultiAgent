@@ -14,8 +14,7 @@ internal static class AddServicesExtension
     {
         builder.AddMcpClients();
         builder.Services.AddSingleton<InstructionLoader>();
-        builder.Services.AddSingleton<BaseEventPublisher>();
-        builder.Services.AddSingleton<IOrderHistoryStore, InMemoryOrderHistoryStore>();
+        builder.Services.AddSingleton<WorkflowEventPublisher>();
 
         // add workflows
         builder.AddOrderWorkflow();

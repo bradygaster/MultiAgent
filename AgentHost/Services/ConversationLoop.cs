@@ -3,11 +3,11 @@ using Microsoft.Extensions.AI;
 using System.Text;
 using System.Text.Json;
 
-public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentPool, BaseEventPublisher eventPublisher)
+public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentPool, WorkflowEventPublisher eventPublisher)
 {
-    private async Task PublishWorkflowEventAsync<TEvent>(TEvent evt, IWorkflowDefinition workflowDefinition, string instanceId, WorkflowEventType eventType) where TEvent : WorkflowStatusEvent
+    private async Task PublishWorkflowEventAsync<TEvent>(TEvent evt, IWorkflowDefinition workflowDefinition, WorkflowEventType eventType) where TEvent : WorkflowStatusEvent
     {
-        workflowDefinition.EnrichEvent(evt, instanceId, eventType);
+        workflowDefinition.EnrichEvent(evt, eventType);
         await eventPublisher.PublishEventAsync(evt);
     }
 
@@ -26,7 +26,7 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
 
         string? lastExecutorId = null;
         
-        var instanceId = workflowDefinition.GenerateWorkflowInstanceId();
+        var workflowId = workflowDefinition.GenerateWorkflowInstanceId();
 
         // Publish workflow started event
         var startEvent = new TEvent
@@ -35,9 +35,10 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
             AgentName = "System",
             WorkflowEventType = WorkflowEventType.WorkflowStarted,
             Message = userInput,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
+            WorkflowId = workflowId
         };
-        await PublishWorkflowEventAsync(startEvent, workflowDefinition, instanceId, WorkflowEventType.WorkflowStarted);
+        await PublishWorkflowEventAsync(startEvent, workflowDefinition, WorkflowEventType.WorkflowStarted);
 
         // Build the initial message using the workflow definition
         var initialMessage = workflowDefinition.BuildInitialMessage(userInput);
@@ -68,9 +69,10 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
                             AgentName = e.Update.AuthorName ?? "Unknown",
                             WorkflowEventType = WorkflowEventType.AgentStarted,
                             Message = $"🕵️ {e.Update.AuthorName} starting",
-                            Timestamp = DateTime.UtcNow
+                            Timestamp = DateTime.UtcNow,
+                            WorkflowId = workflowId
                         };
-                        await PublishWorkflowEventAsync(agentEvent, workflowDefinition, instanceId, WorkflowEventType.AgentStarted);
+                        await PublishWorkflowEventAsync(agentEvent, workflowDefinition, WorkflowEventType.AgentStarted);
                     }
 
                     sb.Append(e.Update.Text);
@@ -91,9 +93,10 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
                             {
                                 ["name"] = call.Name,
                                 ["arguments"] = call.Arguments ?? new Dictionary<string, object?>()
-                            }
+                            },
+                            WorkflowId = workflowId
                         };
-                        await PublishWorkflowEventAsync(toolEvent, workflowDefinition, instanceId, WorkflowEventType.ToolCalled);
+                        await PublishWorkflowEventAsync(toolEvent, workflowDefinition, WorkflowEventType.ToolCalled);
                     }
                 }
                 else if (evt is WorkflowOutputEvent output)
@@ -108,9 +111,10 @@ public class ConversationLoop(ILogger<ConversationLoop> logger, AgentPool agentP
                         AgentName = "System",
                         WorkflowEventType = WorkflowEventType.WorkflowEnded,
                         Message = $"{workflowDefinition.Name} completed successfully",
-                        Timestamp = DateTime.UtcNow
+                        Timestamp = DateTime.UtcNow,
+                        WorkflowId = workflowId
                     };
-                    await PublishWorkflowEventAsync(completeEvent, workflowDefinition, instanceId, WorkflowEventType.WorkflowEnded);
+                    await PublishWorkflowEventAsync(completeEvent, workflowDefinition, WorkflowEventType.WorkflowEnded);
 
                     // Return the list of chat messages produced by the workflow
                     return output.As<List<ChatMessage>>() ?? new List<ChatMessage>();

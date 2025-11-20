@@ -9,28 +9,21 @@ const AgentNode = ({ data }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
-    console.log(`🖱️ Clicked ${data.name}, current expanded:`, expanded, 'will toggle to:', !expanded);
     setExpanded(!expanded);
   };
 
   // Track recently called tools for animation
-  useEffect(() => {
-    console.log(`🔍 AgentNode ${data.name} - lastToolCalled changed:`, data.lastToolCalled, 'timestamp:', data.lastToolTimestamp);
-    
-    if (data.lastToolCalled && data.lastToolTimestamp) {
-      console.log(`⚡ Tool highlight triggered for ${data.name}:`, data.lastToolCalled);
-      
+  useEffect(() => {    
+    if (data.lastToolCalled && data.lastToolTimestamp) {      
       setRecentTools(prev => {
         // Avoid duplicates based on timestamp
         if (prev.some(t => t.timestamp === data.lastToolTimestamp)) {
-          console.log(`   ⏭️  Skipping duplicate timestamp for ${data.name}`);
           return prev;
         }
         const updated = [
           { name: data.lastToolCalled, timestamp: data.lastToolTimestamp },
           ...prev.slice(0, 2)
         ];
-        console.log(`   ✅ Updated recentTools for ${data.name}:`, updated);
         return updated;
       });
     }
@@ -167,10 +160,6 @@ const AgentNode = ({ data }) => {
             {data.tools.map((tool, idx) => {
               const isRecentlyCalled = recentTools.some(t => t.name === tool.name);
               const callCount = globalToolCounts[`${data.name}:${tool.name}`] || 0;
-              
-              if (idx === 0 && recentTools.length > 0) {
-                console.log(`🔧 ${data.name} - Checking tool "${tool.name}" against recent:`, recentTools.map(t => t.name), 'Match:', isRecentlyCalled);
-              }
               
               return (
                 <div

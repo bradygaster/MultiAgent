@@ -1,3 +1,4 @@
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 
 public interface IWorkflowDefinition
@@ -6,11 +7,11 @@ public interface IWorkflowDefinition
     
     string Description { get; }
     
-    object BuildWorkflow(AgentPool agentPool);
+    Workflow BuildWorkflow(AgentPool agentPool);
     
     ChatMessage BuildInitialMessage(string userInput);
     
     string GenerateWorkflowInstanceId();
     
-    void EnrichEvent(WorkflowStatusEvent evt, string instanceId, WorkflowEventType eventType);
+    void EnrichEvent(WorkflowStatusEvent evt, WorkflowEventType eventType);
 }

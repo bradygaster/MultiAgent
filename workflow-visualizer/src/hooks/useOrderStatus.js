@@ -30,38 +30,28 @@ export const useOrderStatus = () => {
         .then(() => {
           console.log('✅ Connected to OrderStatusHub');
           setIsConnected(true);
-          
-          // Subscribe to order updates
-          connection.invoke('SubscribeToOrders')
-            .catch(err => console.error('Error subscribing to orders:', err));
 
           // Listen for order status updates
-          connection.on('OrderStatusEvent', (event) => {
+          connection.on('WorkflowStatusEvent', (event) => {
             console.log('📡 Raw Order Status Update:', JSON.stringify(event, null, 2));
             console.log('   Properties:', Object.keys(event));
             console.log('   workflowEventType value:', event.workflowEventType, 'type:', typeof event.workflowEventType);
-            console.log('   orderEventType value:', event.orderEventType, 'type:', typeof event.orderEventType);
-            
-            // Log tool calls specifically (workflowEventType 4 = ToolCalled)
-            if (event.workflowEventType === 4) {
-              console.log('🔧 Tool Called:', event.toolCall?.name, 'by', event.agentName);
-            }
-            
+                 
             setOrderEvents(prev => [...prev, event]);
             
             setActiveOrders(prev => {
-              const orderData = prev[event.orderId] || { events: [] };
+              const orderData = prev[event.workflowId] || { events: [] };
               
               return {
                 ...prev,
-                [event.orderId]: {
+                [event.workflowId]: {
                   ...orderData,
                   currentAgent: event.agentId,
                   currentAgentName: event.agentName,
                   lastUpdate: event.timestamp,
                   lastEventType: event.workflowEventType,
                   events: [...orderData.events, event],
-                  isComplete: event.orderEventType === 1 // OrderCompleted = 1
+                  isComplete: event.workflowEventType === 2 // WorkflowEnded = 2
                 }
               };
             });
@@ -80,8 +70,6 @@ export const useOrderStatus = () => {
       connection.onreconnected(connectionId => {
         console.log('✅ SignalR reconnected:', connectionId);
         setIsConnected(true);
-        connection.invoke('SubscribeToOrders')
-          .catch(err => console.error('Error re-subscribing to orders:', err));
       });
 
       connection.onclose(error => {
@@ -100,9 +88,9 @@ export const useOrderStatus = () => {
   const clearCompletedOrders = useCallback(() => {
     setActiveOrders(prev => {
       const filtered = {};
-      Object.entries(prev).forEach(([orderId, order]) => {
-        if (!order.isComplete) {
-          filtered[orderId] = order;
+      Object.entries(prev).forEach(([workflowId, evt]) => {
+        if (!evt.isComplete) {
+          filtered[workflowId] = evt;
         }
       });
       return filtered;
